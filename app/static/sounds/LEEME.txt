@@ -1,0 +1,7 @@
+# Carpeta de Sonidos Deportivos (Stream Engine)
+
+Coloca en esta carpeta tus archivos de audio personalizados:
+- `chicharra.mp3` o `chicharra.wav` : Sonido para Básquetbol (fin de cuarto, fin de posesión de 24s y botón manual).
+- `silbato.mp3` o `silbato.wav`     : Sonido para Fútbol (silbatazos de inicio, faltas, entretiempo y final).
+
+Si no colocas ningún archivo, el sistema utilizará automáticamente el sintetizador de audio integrado como respaldo.

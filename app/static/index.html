@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stream Master Studio Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #090d16;
+            --card-bg: #131b2e;
+            --card-border: #1f2c47;
+            --accent: #2563eb;
+            --green: #10b981;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --orange: #f97316;
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+            --radius: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+
+        header { background: var(--card-bg); border-bottom: 1px solid var(--card-border); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 6px; }
+        .brand { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: clamp(0.9rem, 3.5vw, 1.05rem); color: #fff; }
+        .header-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: clamp(0.68rem, 2.8vw, 0.75rem); font-weight: 700; padding: 4px 9px; border-radius: 20px; background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid var(--green); cursor: pointer; }
+        .status-pill.offline { background: rgba(239, 68, 68, 0.15); color: var(--red); border-color: var(--red); }
+        .sport-pill { background: rgba(37, 99, 235, 0.2); border-color: #3b82f6; color: #60a5fa; cursor: pointer; transition: all 0.2s; }
+        .sport-pill:active { transform: scale(0.95); }
+        .net-pill { background: rgba(245, 158, 11, 0.15); border-color: #f59e0b; color: #fbbf24; }
+
+        nav.tab-bar { display: flex; background: #0f1626; border-bottom: 1px solid var(--card-border); overflow-x: auto; scrollbar-width: none; }
+        nav.tab-bar::-webkit-scrollbar { display: none; }
+        .tab-link { flex: 1; min-width: 54px; padding: 8px 2px; text-align: center; background: transparent; border: none; color: var(--text-dim); font-size: clamp(0.68rem, 2.5vw, 0.76rem); font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+        .tab-link i { font-size: 1.05rem; }
+        .tab-link.active { color: #60a5fa; border-bottom: 3px solid #3b82f6; background: rgba(59, 130, 246, 0.08); }
+
+        main { flex: 1; padding: 10px; max-width: 900px; margin: 0 auto; width: 100%; }
+        .tab-page { display: none; animation: fadeIn 0.2s ease-out; }
+        .tab-page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 12px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); overflow: hidden; }
+        .card-title { font-size: clamp(0.78rem, 3vw, 0.85rem); font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
+
+        .timer-hero { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #090f1d; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; margin-bottom: 10px; width: 100%; }
+        .timer-digits { font-size: clamp(2.4rem, 11vw, 3.4rem); font-weight: 900; font-family: 'Courier New', Courier, monospace; color: var(--yellow); letter-spacing: 1px; line-height: 1; margin: 2px 0 6px 0; font-variant-numeric: tabular-nums; }
+        .phase-badge { font-size: clamp(0.72rem, 2.8vw, 0.85rem); font-weight: 800; color: #fff; background: #1e293b; padding: 3px 10px; border-radius: 12px; border: 1px solid #334155; }
+
+        .btn-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; width: 100%; }
+        .btn { flex: 1 1 auto; min-width: 55px; background: #1e293b; color: #fff; border: 1px solid #334155; padding: 9px 6px; border-radius: 8px; font-weight: 700; font-size: clamp(0.75rem, 2.9vw, 0.85rem); cursor: pointer; text-align: center; display: flex; align-items: center; justify-content: center; gap: 5px; transition: transform 0.1s, background 0.15s; word-break: keep-all; }
+        .btn:active { transform: scale(0.94); }
+        .btn-green { background: #059669; border-color: #10b981; }
+        .btn-red { background: #dc2626; border-color: #ef4444; }
+        .btn-blue { background: #2563eb; border-color: #3b82f6; }
+        .btn-yellow { background: #d97706; border-color: #f59e0b; color: #000; }
+        .btn-gold { background: linear-gradient(135deg, #d97706, #b45309); border-color: #f59e0b; color: #fff; }
+        .btn-orange { background: #ea580c; border-color: #f97316; }
+
+        .teams-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; width: 100%; }
+        .team-box { background: #090f1d; border: 1px solid var(--card-border); border-radius: 10px; padding: 8px; display: flex; flex-direction: column; align-items: center; overflow: hidden; width: 100%; }
+        .team-header-input { width: 100%; background: #131c2e; border: 1px solid var(--card-border); color: #fff; font-weight: 800; font-size: clamp(0.85rem, 3.2vw, 1rem); text-align: center; padding: 6px 4px; border-radius: 6px; margin-bottom: 6px; }
+        .logo-preview-box { width: 44px; height: 44px; border-radius: 8px; background: #1e293b; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; overflow: hidden; border: 1px dashed #475569; cursor: pointer; flex-shrink: 0; }
+        .logo-preview-box img { width: 100%; height: 100%; object-fit: contain; }
+
+        .score-row { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin: 4px 0; }
+        .arrow-btn { width: clamp(36px, 10vw, 42px); height: clamp(36px, 10vw, 42px); border-radius: 8px; background: #1e293b; color: #fff; border: 1px solid #3b82f6; font-size: 1.1rem; font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+        .arrow-btn:active { transform: scale(0.9); }
+        .arrow-btn.down { border-color: #ef4444; color: #f87171; }
+        .score-val { font-size: clamp(2rem, 8vw, 2.8rem); font-weight: 900; color: #fff; min-width: 44px; text-align: center; font-variant-numeric: tabular-nums; }
+
+        .penalty-dots { display: flex; gap: 4px; margin: 6px 0; justify-content: center; flex-wrap: wrap; }
+        .p-dot { width: 20px; height: 20px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; border: 1px solid #64748b; }
+        .p-dot.scored { background: #10b981; border-color: #34d399; color: #fff; }
+        .p-dot.missed { background: #ef4444; border-color: #f87171; color: #fff; }
+
+        .select-input { width: 100%; background: #090f1d; border: 1px solid var(--card-border); color: #fff; padding: 8px; border-radius: 8px; font-size: clamp(0.8rem, 3vw, 0.9rem); font-weight: 600; margin-bottom: 8px; }
+        .deck-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .deck-btn { background: #101726; border: 1px solid var(--card-border); color: #fff; padding: 12px 8px; border-radius: var(--radius); font-weight: 700; font-size: clamp(0.75rem, 2.9vw, 0.88rem); display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; text-align: center; transition: all 0.2s; position: relative; }
+        .deck-btn i { font-size: 1.3rem; }
+        .deck-btn:active { transform: scale(0.95); border-color: var(--accent); }
+        .deck-btn.red { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+        .deck-btn.active-cam { border-color: #10b981; background: rgba(16, 185, 129, 0.18); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+        .live-tag { position: absolute; top: 4px; right: 6px; background: #dc2626; color: #fff; font-size: 0.6rem; font-weight: 900; padding: 1px 5px; border-radius: 4px; display: none; }
+        .deck-btn.active-cam .live-tag { display: block; }
+
+        /* Modals */
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 999; padding: 12px; }
+        .modal-backdrop.show { display: flex; }
+        .modal-card { background: #111827; border: 2px solid var(--card-border); border-radius: 16px; padding: 18px; max-width: 440px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.8); text-align: center; }
+        .modal-title { font-size: clamp(1rem, 4vw, 1.25rem); font-weight: 900; margin-bottom: 6px; color: #fff; letter-spacing: 0.5px; }
+        .sport-option-card { background: #1f2937; border: 2px solid #374151; border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; text-align: left; transition: all 0.2s; margin-bottom: 10px; }
+        .sport-option-card:active, .sport-option-card:hover { border-color: #3b82f6; background: #243042; transform: translateY(-2px); }
+        .sport-option-card.selected { border-color: #10b981; background: rgba(16, 185, 129, 0.15); }
+
+        /* Stats Básquet */
+        .stat-counter-box { display: flex; align-items: center; justify-content: space-between; background: #090f1d; border: 1px solid var(--card-border); border-radius: 8px; padding: 5px 8px; margin-top: 5px; width: 100%; }
+        .stat-val { font-size: 1.25rem; font-weight: 900; font-family: monospace; color: #fff; min-width: 26px; text-align: center; }
+        .mini-btn { width: 28px; height: 28px; border-radius: 6px; background: #1e293b; color: #fff; border: 1px solid #475569; font-weight: 900; font-size: 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .mini-btn:active { transform: scale(0.9); }
+        .bonus-indicator { font-size: 0.65rem; font-weight: 900; background: #dc2626; color: #fff; padding: 2px 5px; border-radius: 4px; display: none; }
+        .bonus-indicator.active { display: inline-block; animation: pulseGlow 1s infinite; }
+        @keyframes pulseGlow { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+        /* Lista de equipos y sponsors */
+        .item-card { background: #090f1d; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .item-thumb { width: 40px; height: 40px; border-radius: 8px; background: #1e293b; object-fit: contain; flex-shrink: 0; }
+        .player-chip { display: inline-flex; align-items: center; gap: 3px; background: #1e293b; border: 1px solid #334155; padding: 2px 6px; border-radius: 6px; font-size: 0.72rem; margin: 2px; }
+        .player-chip.starter { border-color: #10b981; color: #34d399; }
+
+        /* Colores de equipo */
+        .color-dots-bar { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; justify-content: center; }
+        .color-dot { width: 16px; height: 16px; border-radius: 50%; cursor: pointer; border: 2px solid #334155; transition: transform 0.15s; }
+        .color-dot:active, .color-dot.active { transform: scale(1.25); border-color: #fff; }
+
+        /* Stream Health Header Bar */
+        .stream-health-strip { background: #0b111e; border-bottom: 1px solid var(--card-border); padding: 5px 10px; display: flex; justify-content: space-between; align-items: center; font-size: clamp(0.68rem, 2.7vw, 0.75rem); font-weight: 800; cursor: pointer; flex-wrap: wrap; gap: 4px; }
+        .sh-pill { display: flex; align-items: center; gap: 5px; }
+        .sh-badge { padding: 2px 6px; border-radius: 10px; font-size: 0.68rem; }
+        .sh-badge.live { background: #dc2626; color: #fff; }
+        .sh-badge.rec { background: #ea580c; color: #fff; }
+        .sh-badge.off { background: #1e293b; color: #64748b; }
+
+        /* ========================================================= */
+        /* CONSOLA INTERACTIVA DE BÁSQUETBOL (STADIUM DEPORTES) */
+        /* ========================================================= */
+        .basket-console-card {
+            position: relative;
+            background: #09090b;
+            border: 6px solid #334155;
+            outline: 2px solid #0f172a;
+            border-radius: 14px;
+            padding: 16px 12px 14px 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.9);
+            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1.2px, transparent 1.2px);
+            background-size: 5px 5px;
+        }
+
+        .bc-rivet-row {
+            position: absolute;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 16px;
+            pointer-events: none;
+        }
+        .bc-rivet-row.top { top: -5px; }
+        .bc-rivet-row.bottom { bottom: -5px; }
+        .bc-rivet {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #ffffff 0%, #cbd5e1 45%, #64748b 80%, #0f172a 100%);
+            border: 1px solid #1e293b;
+        }
+
+        .bc-header-title {
+            font-size: clamp(0.75rem, 3vw, 0.85rem);
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .bc-display {
+            font-family: 'DSEG7-Classic', 'VT323', 'Courier New', monospace;
+            font-weight: 900;
+            text-align: center;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 2px;
+            background: #050507;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 8px 6px;
+            box-shadow: inset 0 0 14px rgba(0,0,0,0.95);
+        }
+        .bc-display-red {
+            color: #ff1e1e;
+            text-shadow: 0 0 10px #ff1e1e, 0 0 22px #dc2626;
+        }
+        .bc-display-amber {
+            color: #facc15;
+            text-shadow: 0 0 10px #facc15, 0 0 20px #eab308;
+        }
+        .bc-display-orange {
+            color: #fb923c;
+            text-shadow: 0 0 10px #fb923c, 0 0 20px #ea580c;
+        }
+
+        .bc-time-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.65);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .bc-time-display {
+            font-size: clamp(2.4rem, 10vw, 3.6rem);
+            width: 100%;
+            max-width: 320px;
+            margin: 4px 0 8px 0;
+        }
+
+        .bc-middle-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+            align-items: start;
+        }
+
+        .bc-team-col {
+            background: rgba(15, 23, 42, 0.65);
+            border-radius: 10px;
+            padding: 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .bc-name-input {
+            width: 100%;
+            background: #0f172a;
+            color: #ffffff;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 5px 6px;
+            font-size: clamp(0.78rem, 3.2vw, 0.95rem);
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .bc-score-display {
+            font-size: clamp(2.2rem, 9vw, 3.2rem);
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .bc-points-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            width: 100%;
+        }
+        .bc-pt-btn {
+            padding: 9px 2px !important;
+            font-size: clamp(0.75rem, 2.7vw, 0.85rem) !important;
+            font-weight: 800 !important;
+        }
+
+        .bc-period-col {
+            background: rgba(15, 23, 42, 0.65);
+            border-radius: 10px;
+            padding: 8px 6px;
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+        .bc-period-display {
+            font-size: clamp(1.8rem, 7vw, 2.5rem);
+            width: 100%;
+            margin-bottom: 6px;
+        }
+        .bc-period-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            width: 100%;
+        }
+        .bc-period-btns .btn {
+            padding: 5px 2px !important;
+            font-size: 0.72rem !important;
+        }
+
+        .bc-bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.25fr 1fr;
+            gap: 8px;
+            align-items: stretch;
+        }
+        .bc-foul-col {
+            background: rgba(15, 23, 42, 0.65);
+            border-radius: 10px;
+            padding: 8px 6px;
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .bc-foul-display {
+            font-size: clamp(1.8rem, 7vw, 2.4rem);
+            width: 100%;
+            margin-bottom: 6px;
+        }
+        .bc-bonus-badge {
+            font-size: 0.65rem;
+            font-weight: 900;
+            background: #dc2626;
+            color: #ffffff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            animation: pulseGlow 1s infinite;
+        }
+
+        .bc-center-col {
+            background: rgba(15, 23, 42, 0.75);
+            border-radius: 10px;
+            padding: 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+        }
+        .bc-shot-clock-box {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .bc-sc-label {
+            font-size: 0.68rem;
+            font-weight: 900;
+            color: #f59e0b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .bc-sc-display {
+            font-size: clamp(1.6rem, 6vw, 2.2rem);
+            width: 100%;
+            max-width: 110px;
+            padding: 4px 6px;
+        }
+
+        .bc-buzzer-btn {
+            width: 100%;
+            padding: 11px 4px !important;
+            font-size: clamp(0.78rem, 3.2vw, 0.95rem) !important;
+            font-weight: 900 !important;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.45);
+            border: 2px solid #fca5a5 !important;
+        }
+
+        @media (max-width: 480px) {
+            .btn { min-width: 48px; padding: 8px 4px; font-size: 0.76rem; }
+            .score-val { font-size: 2.1rem; }
+            .team-box { padding: 6px; }
+            .teams-grid { gap: 6px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MODAL 1: SELECCIÓN DE DEPORTE -->
+    <div id="sportModal" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-title">¿QUÉ VAS A TRANSMITIR HOY?</div>
+            <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 16px;">
+                Elige el perfil para cargar automáticamente la botonera y el perfil en OBS Studio.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div id="optFutbol" class="sport-option-card" onclick="selectSportProfile('futbol')">
+                    <div style="font-size: 2.2rem;">⚽</div>
+                    <div>
+                        <div style="font-size: 1.1rem; font-weight: 900; color: #fff;">FÚTBOL</div>
+                        <div style="font-size: 0.78rem; color: var(--text-dim);">2 Tiempos (45'), Adicionado, Goles, Tarjetas, Cambios y Penales</div>
+                    </div>
+                </div>
+                <div id="optBasquet" class="sport-option-card" onclick="selectSportProfile('basquet')">
+                    <div style="font-size: 2.2rem;">🏀</div>
+                    <div>
+                        <div style="font-size: 1.1rem; font-weight: 900; color: #f59e0b;">BÁSQUETBOL</div>
+                        <div style="font-size: 0.78rem; color: var(--text-dim);">4 Cuartos (10'/12'), Reloj regresivo, Posesión (24s/14s), Faltas y Puntos</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn" style="width: 100%; margin-top: 10px; background: transparent; border-color: #374151;" onclick="closeSportModal()">Continuar con el actual</button>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ESTADO Y CONTROL DE TRANSMISIÓN OBS -->
+    <div id="streamModal" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-title">🔴 CONTROL DE EMISIÓN Y GRABACIÓN (OBS)</div>
+            <p style="font-size: 0.82rem; color: var(--text-dim); margin-bottom: 14px;">
+                Supervisa el estado del directo y activa o detén la transmisión sin tocar la computadora.
+            </p>
+            <div style="background: #090f1d; border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; margin-bottom: 14px; text-align: left; font-size: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: var(--text-dim);">Transmisión:</span>
+                    <strong id="modalStreamStatus" style="color: #64748b;">OFF</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: var(--text-dim);">Tiempo en Directo:</span>
+                    <strong id="modalStreamTime" style="font-family: monospace;">00:00:00</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: var(--text-dim);">Grabación Local:</span>
+                    <strong id="modalRecStatus" style="color: #64748b;">OFF</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: var(--text-dim);">Rendimiento:</span>
+                    <strong id="modalFpsStatus" style="color: #60a5fa;">60 FPS (0.0% cuadros perdidos)</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-dim);">Uso CPU / Bitrate:</span>
+                    <strong id="modalCpuStatus" style="color: #facc15;">0.0% CPU • 0 kbps</strong>
+                </div>
+            </div>
+            <div class="btn-row" style="margin-bottom: 10px;">
+                <button id="btnToggleStream" class="btn btn-red" style="padding: 12px;" onclick="confirmToggleStream()">
+                    <i class="fa-solid fa-tower-broadcast"></i> Iniciar / Detener Stream
+                </button>
+                <button id="btnToggleRecord" class="btn btn-orange" style="padding: 12px;" onclick="confirmToggleRecord()">
+                    <i class="fa-solid fa-circle-dot"></i> Iniciar / Detener REC
+                </button>
+            </div>
+            <button class="btn" style="width: 100%; background: transparent; border-color: #374151;" onclick="closeStreamModal()">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- MODAL 3: SELECTOR DE GOLEADOR -->
+    <div id="goalModal" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-title">⚽ ¿QUIÉN ANOTÓ EL GOL?</div>
+            <p id="goalModalSubtitle" style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 12px;">
+                Selecciona al autor del gol para mostrar su nombre y dorsal en pantalla:
+            </p>
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+                <label style="font-size: 0.8rem; color: var(--text-dim); font-weight: 700;">Minuto:</label>
+                <input id="goalMinuteInput" type="text" class="team-header-input" style="width: 90px; margin-bottom: 0;" placeholder="35'">
+                <button class="btn btn-blue" style="flex: 1;" onclick="submitGoalWithPlayer(null)">
+                    <i class="fa-solid fa-bolt"></i> Gol Genérico
+                </button>
+            </div>
+            <div id="goalPlayersList" style="max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;">
+                <!-- Lista de jugadores del equipo -->
+            </div>
+            <button class="btn" style="width: 100%; background: transparent; border-color: #374151;" onclick="closeGoalModal()">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL 4: CONEXIÓN CELULAR (QR & IP) Y OBS RECONNECT -->
+    <div id="networkModal" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-title">📱 CONEXIÓN CELULAR & OBS</div>
+            <p style="font-size: 0.82rem; color: var(--text-dim); margin-bottom: 12px;">
+                Conecta cualquier celular o tablet a la misma red WiFi y escanea el código QR:
+            </p>
+            <div id="qrCodeContainer" style="background: #ffffff; padding: 12px; border-radius: 12px; display: inline-block; margin-bottom: 10px;">
+                <img id="qrImg" src="" style="width: 160px; height: 160px; display: block; object-fit: contain;">
+            </div>
+            <div style="background: #090f1d; border: 1px solid var(--card-border); border-radius: 8px; padding: 8px 10px; font-family: monospace; font-size: 0.9rem; color: #60a5fa; margin-bottom: 12px; word-break: break-all;">
+                <span id="netUrlText">Cargando IP...</span>
+            </div>
+            <div style="border-top: 1px solid var(--card-border); padding-top: 10px; margin-bottom: 10px;">
+                <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px;">
+                    Estado OBS Studio: <strong id="obsConnText" style="color: #64748b;">Verificando...</strong>
+                </div>
+                <button class="btn btn-blue" style="width: 100%; padding: 11px;" onclick="reconnectObsWS()">
+                    <i class="fa-solid fa-arrows-rotate"></i> Reconectar a OBS WebSocket
+                </button>
+            </div>
+            <button class="btn" style="width: 100%; background: transparent; border-color: #374151;" onclick="closeNetworkModal()">Cerrar</button>
+        </div>
+    </div>
+
+    <header>
+        <div class="brand">
+            <i class="fa-solid fa-satellite-dish" style="color: #3b82f6;"></i>
+            <span>STREAM MASTER PRO</span>
+        </div>
+        <div class="header-actions">
+            <div id="netBtn" class="status-pill net-pill" onclick="openNetworkModal()" title="Ver código QR y dirección IP para conectar celulares">
+                <i class="fa-solid fa-qrcode"></i> QR Móvil
+            </div>
+            <div id="sportBadge" class="status-pill sport-pill" onclick="openSportModal()" title="Toca para cambiar de deporte">
+                <span id="sportIcon">⚽</span>
+                <span id="sportBadgeText">Fútbol</span>
+                <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem;"></i>
+            </div>
+            <div id="wsBadge" class="status-pill">
+                <i class="fa-solid fa-circle"></i> Sincronizado
+            </div>
+        </div>
+    </header>
+
+    <!-- BARRA DE MONITOREO DE STREAM EN TIEMPO REAL -->
+    <div class="stream-health-strip" onclick="openStreamModal()" title="Toca para controlar emisión y grabación en OBS">
+        <div class="sh-pill">
+            <span id="shStreamBadge" class="sh-badge off">STREAM OFF</span>
+            <span id="shStreamTime" style="color: #94a3b8;">00:00:00</span>
+        </div>
+        <div class="sh-pill">
+            <span id="shRecBadge" class="sh-badge off">REC OFF</span>
+            <span id="shRecTime" style="color: #94a3b8;">00:00:00</span>
+        </div>
+        <div class="sh-pill">
+            <span id="shFpsBadge" style="color: #60a5fa;">60 FPS</span>
+            <span id="shBitrateBadge" style="color: #facc15;">0 kbps</span>
+        </div>
+    </div>
+
+    <nav class="tab-bar">
+        <button class="tab-link active" onclick="openTab('pageScoreboard', this)">
+            <i class="fa-solid fa-trophy"></i>
+            <span>Marcador</span>
+        </button>
+        <button class="tab-link" onclick="openTab('pageTeams', this)">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Equipos</span>
+        </button>
+        <button id="tabEvents" class="tab-link" onclick="openTab('pageEvents', this)">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Tarjetas</span>
+        </button>
+        <button id="tabSubs" class="tab-link" onclick="openTab('pageSubs', this)">
+            <i class="fa-solid fa-users"></i>
+            <span>Cambios</span>
+        </button>
+        <button class="tab-link" onclick="openTab('pageDeck', this)">
+            <i class="fa-solid fa-rectangle-ad"></i>
+            <span>Pauta/Deck</span>
+        </button>
+        <button class="tab-link" onclick="openTab('pageCams', this)">
+            <i class="fa-solid fa-video"></i>
+            <span>Cámaras</span>
+        </button>
+    </nav>
+
+    <main>
+        <!-- ==================== PÁGINA 1: MARCADOR ==================== -->
+        <section id="pageScoreboard" class="tab-page active">
+            
+            <!-- CONTENEDOR DE CONTROLES DE FÚTBOL -->
+            <div id="footballControlsContainer">
+                <!-- CRONÓMETRO FÚTBOL -->
+                <div id="timerHeroFutbol" class="timer-hero">
+                    <div id="phaseBadge" class="phase-badge">1ER TIEMPO</div>
+                    <div id="timerDisplay" class="timer-digits">00:00</div>
+                    
+                    <!-- Fases y Pausa de Cronómetro -->
+                    <div class="btn-row">
+                        <button class="btn btn-green" onclick="triggerWhistlePhase('start_1t')" title="Inicia 1T">
+                            <i class="fa-solid fa-play"></i> Iniciar 1T
+                        </button>
+                        <button class="btn btn-yellow" onclick="pauseOrResumeTimer()" title="Pausar o reanudar el cronómetro">
+                            <i class="fa-solid fa-pause"></i> <span id="btnPauseResumeText">Pausar</span>
+                        </button>
+                        <button class="btn btn-yellow" onclick="triggerWhistlePhase('halftime')" title="Doble silbato y pausa">
+                            <i class="fa-solid fa-hand"></i> Entretiempo
+                        </button>
+                        <button class="btn btn-green" onclick="triggerWhistlePhase('start_2t')" title="Inicia 2T en 45:00">
+                            <i class="fa-solid fa-forward"></i> Iniciar 2T
+                        </button>
+                        <button class="btn btn-red" onclick="triggerWhistlePhase('fulltime')" title="Fin del partido">
+                            <i class="fa-solid fa-flag-checkered"></i> Fin Partido
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TIEMPO AÑADIDO (+1' a +5', personalizado y ocultar) -->
+                <div id="addedTimeCard" class="card">
+                    <div class="card-title">
+                        <span><i class="fa-solid fa-clock-rotate-left"></i> Tiempo Adicionado</span>
+                        <span id="addedTimeBadge" style="color: var(--yellow); font-weight: 800;">OCULTO</span>
+                    </div>
+                    <div class="btn-row" style="margin-bottom: 8px;">
+                        <button class="btn" onclick="setAddedTime(1)">+1'</button>
+                        <button class="btn" onclick="setAddedTime(2)">+2'</button>
+                        <button class="btn" onclick="setAddedTime(3)">+3'</button>
+                        <button class="btn" onclick="setAddedTime(4)">+4'</button>
+                        <button class="btn" onclick="setAddedTime(5)">+5'</button>
+                        <button class="btn btn-red" onclick="setAddedTime(0)"><i class="fa-solid fa-eye-slash"></i> Ocultar</button>
+                    </div>
+                    <!-- 6ta opción: Campo Personalizado -->
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input id="customAddedTimeInput" type="number" min="1" max="30" class="team-header-input" style="width: 100px; margin-bottom: 0;" placeholder="Min (ej. 10)">
+                        <button class="btn btn-blue" style="flex: 1;" onclick="applyCustomAddedTime()">
+                            <i class="fa-solid fa-check"></i> Fijar Minutos Adicionales
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Equipos y Marcador Fútbol -->
+                <div class="teams-grid">
+                    <!-- LOCAL -->
+                    <div class="team-box">
+                        <input id="inputLocalName" type="text" class="team-header-input" value="LOCAL" onchange="syncTeams()">
+                        <label class="logo-preview-box" title="Subir Logo">
+                            <img id="imgLogoLocal" src="/uploads/default_local.png" onerror="this.src='https://via.placeholder.com/60?text=LOCAL'">
+                            <input type="file" accept="image/*" style="display:none;" onchange="uploadLogo('local', this.files[0])">
+                        </label>
+
+                        <!-- Selector de Color Rápido Local -->
+                        <div class="color-dots-bar" title="Color primario para el marcador">
+                            <span class="color-dot" style="background: #1e3a8a;" onclick="setTeamColor('local', '#1e3a8a')" title="Azul"></span>
+                            <span class="color-dot" style="background: #dc2626;" onclick="setTeamColor('local', '#dc2626')" title="Rojo"></span>
+                            <span class="color-dot" style="background: #059669;" onclick="setTeamColor('local', '#059669')" title="Verde"></span>
+                            <span class="color-dot" style="background: #d97706;" onclick="setTeamColor('local', '#d97706')" title="Amarillo"></span>
+                            <span class="color-dot" style="background: #0284c7;" onclick="setTeamColor('local', '#0284c7')" title="Celeste"></span>
+                            <span class="color-dot" style="background: #ea580c;" onclick="setTeamColor('local', '#ea580c')" title="Naranja"></span>
+                            <span class="color-dot" style="background: #0f172a;" onclick="setTeamColor('local', '#0f172a')" title="Negro"></span>
+                            <span class="color-dot" style="background: #ffffff;" onclick="setTeamColor('local', '#ffffff')" title="Blanco"></span>
+                        </div>
+
+                        <div class="score-row">
+                            <button class="arrow-btn down" onclick="changeScore('local', -1)"><i class="fa-solid fa-minus"></i></button>
+                            <div id="valScoreLocal" class="score-val">0</div>
+                            <button class="arrow-btn" onclick="changeScore('local', 1)"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+
+                        <!-- Botón Gol (Fútbol) con Selección de Autor -->
+                        <button id="btnGoalLocal" class="btn btn-gold" style="width: 100%; margin-top: 4px;" onclick="openGoalModal('local')">⚽ ¡GOL LOCAL!</button>
+                    </div>
+
+                    <!-- VISITANTE -->
+                    <div class="team-box">
+                        <input id="inputVisitanteName" type="text" class="team-header-input" value="VISITANTE" onchange="syncTeams()">
+                        <label class="logo-preview-box" title="Subir Logo">
+                            <img id="imgLogoVisitante" src="/uploads/default_visitante.png" onerror="this.src='https://via.placeholder.com/60?text=VISIT'">
+                            <input type="file" accept="image/*" style="display:none;" onchange="uploadLogo('visitante', this.files[0])">
+                        </label>
+
+                        <!-- Selector de Color Rápido Visitante -->
+                        <div class="color-dots-bar" title="Color primario para el marcador">
+                            <span class="color-dot" style="background: #1e3a8a;" onclick="setTeamColor('visitante', '#1e3a8a')" title="Azul"></span>
+                            <span class="color-dot" style="background: #dc2626;" onclick="setTeamColor('visitante', '#dc2626')" title="Rojo"></span>
+                            <span class="color-dot" style="background: #059669;" onclick="setTeamColor('visitante', '#059669')" title="Verde"></span>
+                            <span class="color-dot" style="background: #d97706;" onclick="setTeamColor('visitante', '#d97706')" title="Amarillo"></span>
+                            <span class="color-dot" style="background: #0284c7;" onclick="setTeamColor('visitante', '#0284c7')" title="Celeste"></span>
+                            <span class="color-dot" style="background: #ea580c;" onclick="setTeamColor('visitante', '#ea580c')" title="Naranja"></span>
+                            <span class="color-dot" style="background: #0f172a;" onclick="setTeamColor('visitante', '#0f172a')" title="Negro"></span>
+                            <span class="color-dot" style="background: #ffffff;" onclick="setTeamColor('visitante', '#ffffff')" title="Blanco"></span>
+                        </div>
+
+                        <div class="score-row">
+                            <button class="arrow-btn down" onclick="changeScore('visitante', -1)"><i class="fa-solid fa-minus"></i></button>
+                            <div id="valScoreVisitante" class="score-val">0</div>
+                            <button class="arrow-btn" onclick="changeScore('visitante', 1)"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+
+                        <!-- Botón Gol (Fútbol) con Selección de Autor -->
+                        <button id="btnGoalVisitante" class="btn btn-gold" style="width: 100%; margin-top: 4px;" onclick="openGoalModal('visitante')">⚽ ¡GOL VISITANTE!</button>
+                    </div>
+                </div>
+
+                <!-- BOTÓN DE REINICIO RÁPIDO DE GOLES (0 - 0) -->
+                <button class="btn btn-yellow" style="width: 100%; padding: 12px; margin-bottom: 12px; font-size: 0.95rem;" onclick="resetScoreboardGols()">
+                    <i class="fa-solid fa-arrows-rotate"></i> REINICIAR MARCADOR A CERO (0 - 0)
+                </button>
+
+                <!-- TANDA DE PENALES -->
+                <div id="penaltiesSection" class="card">
+                    <div class="card-title">
+                        <span><i class="fa-solid fa-futbol"></i> Tanda de Penales</span>
+                        <div style="display: flex; gap: 6px;">
+                            <button id="btnTogglePenaltiesOverlay" class="btn btn-blue" style="padding: 4px 8px; font-size: 0.75rem;" onclick="togglePenaltiesVisibility()">
+                                <i class="fa-solid fa-eye"></i> Mostrar en Pantalla
+                            </button>
+                            <button class="btn btn-yellow" style="padding: 4px 8px; font-size: 0.75rem;" onclick="penaltyAction('local', 'reset')">Reiniciar</button>
+                        </div>
+                    </div>
+                    
+                    <div style="font-size: 0.8rem; font-weight: 700; color: #94a3b8;">LOCAL:</div>
+                    <div id="localPenaltiesDots" class="penalty-dots"></div>
+                    <div class="btn-row" style="margin-bottom: 10px;">
+                        <button class="btn btn-green" onclick="penaltyAction('local', 'scored')">⚽ Gol</button>
+                        <button class="btn btn-red" onclick="penaltyAction('local', 'missed')">❌ Falló</button>
+                        <button class="btn" onclick="penaltyAction('local', 'undo')">↩ Deshacer</button>
+                    </div>
+
+                    <div style="font-size: 0.8rem; font-weight: 700; color: #94a3b8;">VISITANTE:</div>
+                    <div id="visitantePenaltiesDots" class="penalty-dots"></div>
+                    <div class="btn-row">
+                        <button class="btn btn-green" onclick="penaltyAction('visitante', 'scored')">⚽ Gol</button>
+                        <button class="btn btn-red" onclick="penaltyAction('visitante', 'missed')">❌ Falló</button>
+                        <button class="btn" onclick="penaltyAction('visitante', 'undo')">↩ Deshacer</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONSOLA INTERACTIVA DE BÁSQUETBOL (ESTILO STADIUM DEPORTES) -->
+            <div id="basketConsoleBoard" class="basket-console-card" style="display: none;">
+                <!-- Remaches superiores -->
+                <div class="bc-rivet-row top">
+                    <span class="bc-rivet"></span><span class="bc-rivet"></span><span class="bc-rivet"></span><span class="bc-rivet"></span>
+                </div>
+
+                <!-- 1. TIEMPO DE JUEGO -->
+                <div class="bc-time-box">
+                    <div class="bc-header-title">TIEMPO</div>
+                    <div id="bcTimeVal" class="bc-display bc-display-red bc-time-display">10:00</div>
+                    <div class="btn-row" style="max-width: 520px; justify-content: center; gap: 6px;">
+                        <button id="bcBtnStartPause" class="btn btn-green" style="flex: 2; padding: 12px 10px; font-size: 1rem; font-weight: 900;" onclick="pauseOrResumeTimer()">
+                            <i class="fa-solid fa-play"></i> <span id="bcStartPauseText">Iniciar Reloj</span>
+                        </button>
+                        <button class="btn btn-yellow" style="padding: 10px 8px;" onclick="adjustTime(-60)">-1m</button>
+                        <button class="btn btn-yellow" style="padding: 10px 8px;" onclick="adjustTime(60)">+1m</button>
+                        <button class="btn" style="padding: 10px 8px; font-weight: 800;" onclick="setTimerSeconds(600)">10:00</button>
+                        <button class="btn" style="padding: 10px 8px; font-weight: 800;" onclick="setTimerSeconds(720)">12:00</button>
+                    </div>
+                </div>
+
+                <!-- 2. LOCAL - PERIODO - VISITA -->
+                <div class="bc-middle-grid">
+                    <!-- LOCAL -->
+                    <div class="bc-team-col">
+                        <input id="bcInputNameLocal" type="text" class="bc-name-input" value="LOCAL" placeholder="NOMBRE LOCAL" oninput="syncTeamsFromConsole()" onchange="syncTeamsFromConsole()">
+                        <div id="bcScoreValLocal" class="bc-display bc-display-red bc-score-display">0</div>
+                        <div class="bc-points-grid">
+                            <button class="btn btn-blue bc-pt-btn" onclick="changeScore('local', 1)">+1 TL</button>
+                            <button class="btn btn-green bc-pt-btn" onclick="changeScore('local', 2)">+2 Doble</button>
+                            <button class="btn btn-orange bc-pt-btn" onclick="changeScore('local', 3)">+3 Triple</button>
+                            <button class="btn btn-red bc-pt-btn" onclick="changeScore('local', -1)">-1</button>
+                        </div>
+                    </div>
+
+                    <!-- PERIODO -->
+                    <div class="bc-period-col">
+                        <div class="bc-header-title">PERIODO</div>
+                        <div id="bcPeriodVal" class="bc-display bc-display-amber bc-period-display">1</div>
+                        <div class="bc-period-btns">
+                            <button class="btn" onclick="setBasketQuarter('1Q', 600)">1Q</button>
+                            <button class="btn" onclick="setBasketQuarter('2Q', 600)">2Q</button>
+                            <button class="btn" onclick="setBasketQuarter('3Q', 600)">3Q</button>
+                            <button class="btn" onclick="setBasketQuarter('4Q', 600)">4Q</button>
+                            <button class="btn btn-yellow" onclick="setBasketQuarter('OT', 300)">OT</button>
+                        </div>
+                    </div>
+
+                    <!-- VISITA -->
+                    <div class="bc-team-col">
+                        <input id="bcInputNameVisit" type="text" class="bc-name-input" value="VISITA" placeholder="NOMBRE VISITA" oninput="syncTeamsFromConsole()" onchange="syncTeamsFromConsole()">
+                        <div id="bcScoreValVisit" class="bc-display bc-display-red bc-score-display">0</div>
+                        <div class="bc-points-grid">
+                            <button class="btn btn-blue bc-pt-btn" onclick="changeScore('visitante', 1)">+1 TL</button>
+                            <button class="btn btn-green bc-pt-btn" onclick="changeScore('visitante', 2)">+2 Doble</button>
+                            <button class="btn btn-orange bc-pt-btn" onclick="changeScore('visitante', 3)">+3 Triple</button>
+                            <button class="btn btn-red bc-pt-btn" onclick="changeScore('visitante', -1)">-1</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. FALTAS LOCAL - POSESIÓN/CHICHARRA - FALTAS VISITA -->
+                <div class="bc-bottom-grid">
+                        <!-- FALTAS LOCAL -->
+                        <div class="bc-foul-col">
+                            <div class="bc-header-title">FALTAS</div>
+                            <div id="bcFoulsValLocal" class="bc-display bc-display-orange bc-foul-display">0</div>
+                            <span id="bcBonusTagLocal" class="bc-bonus-badge" style="display:none;">BONUS</span>
+                            <div class="btn-row" style="margin-top: 4px;">
+                                <button class="btn btn-red" style="padding: 8px 4px;" onclick="changeFouls('local', 1)">+ Falta</button>
+                                <button class="btn" style="padding: 8px 4px;" onclick="changeFouls('local', -1)">- 1</button>
+                                <button class="btn" style="padding: 8px 4px; font-size: 0.72rem;" onclick="resetFouls('local')">Reset 0</button>
+                            </div>
+                            <!-- Tiempos Muertos y Posesión -->
+                            <div style="margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px; width: 100%;">
+                                <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 800;">TIEMPOS MUERTOS</div>
+                                <div style="display: flex; gap: 4px; align-items: center; justify-content: center; margin-top: 3px;">
+                                    <button class="btn" style="padding: 4px 8px;" onclick="changeTimeouts('local', -1)">-1</button>
+                                    <span id="bcTimeoutsValLocal" style="font-weight: 900; font-size: 1.1rem; color: #facc15;">5</span>
+                                    <button class="btn btn-green" style="padding: 4px 8px;" onclick="changeTimeouts('local', 1)">+1</button>
+                                </div>
+                                <button class="btn btn-blue" style="width: 100%; margin-top: 6px; font-size: 0.75rem; padding: 6px;" onclick="setPossession('local')">
+                                    ◀ Balón Local
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- POSESIÓN 24s Y CHICHARRA CENTRAL -->
+                        <div class="bc-center-col">
+                            <div class="bc-shot-clock-box">
+                                <span class="bc-sc-label">POSESIÓN</span>
+                                <div id="bcShotClockVal" class="bc-display bc-display-amber bc-sc-display">24</div>
+                                <div class="btn-row" style="margin-top: 4px;">
+                                    <button class="btn btn-orange" style="padding: 7px 4px; font-size: 0.75rem;" onclick="shotClockAction('reset_24')">24s</button>
+                                    <button class="btn btn-yellow" style="padding: 7px 4px; font-size: 0.75rem;" onclick="shotClockAction('reset_14')">14s</button>
+                                    <button id="bcBtnScToggle" class="btn btn-green" style="padding: 7px 8px;" onclick="shotClockAction('toggle')"><i class="fa-solid fa-play"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- BOTÓN DESTACADO DE CHICHARRA MANUAL -->
+                            <button class="btn btn-red bc-buzzer-btn" onclick="triggerSound('buzzer')" title="Tocar Chicharra del Estadio">
+                                <i class="fa-solid fa-bell"></i> 🚨 CHICHARRA
+                            </button>
+                            <button class="btn" style="margin-top: 6px; font-size: 0.72rem; padding: 5px; width: 100%;" onclick="setPossession('none')">
+                                Posesión Neutra
+                            </button>
+                        </div>
+
+                        <!-- FALTAS VISITA -->
+                        <div class="bc-foul-col">
+                            <div class="bc-header-title">FALTAS</div>
+                            <div id="bcFoulsValVisit" class="bc-display bc-display-orange bc-foul-display">0</div>
+                            <span id="bcBonusTagVisit" class="bc-bonus-badge" style="display:none;">BONUS</span>
+                            <div class="btn-row" style="margin-top: 4px;">
+                                <button class="btn btn-red" style="padding: 8px 4px;" onclick="changeFouls('visitante', 1)">+ Falta</button>
+                                <button class="btn" style="padding: 8px 4px;" onclick="changeFouls('visitante', -1)">- 1</button>
+                                <button class="btn" style="padding: 8px 4px; font-size: 0.72rem;" onclick="resetFouls('visitante')">Reset 0</button>
+                            </div>
+                            <!-- Tiempos Muertos y Posesión -->
+                            <div style="margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px; width: 100%;">
+                                <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 800;">TIEMPOS MUERTOS</div>
+                                <div style="display: flex; gap: 4px; align-items: center; justify-content: center; margin-top: 3px;">
+                                    <button class="btn" style="padding: 4px 8px;" onclick="changeTimeouts('visitante', -1)">-1</button>
+                                    <span id="bcTimeoutsValVisit" style="font-weight: 900; font-size: 1.1rem; color: #facc15;">5</span>
+                                    <button class="btn btn-green" style="padding: 4px 8px;" onclick="changeTimeouts('visitante', 1)">+1</button>
+                                </div>
+                                <button class="btn btn-blue" style="width: 100%; margin-top: 6px; font-size: 0.75rem; padding: 6px;" onclick="setPossession('visitante')">
+                                    Balón Visita ▶
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enlace directo para abrir Overlay NBA en OBS -->
+                    <div style="margin-top: 12px; display: flex; gap: 8px;">
+                        <a href="/overlay/nba.html" target="_blank" class="btn btn-gold" style="flex: 1; text-decoration: none; padding: 11px; font-weight: 800;">
+                            <i class="fa-solid fa-tv"></i> Abrir Marcador NBA en Nueva Pestaña / OBS
+                        </a>
+                    </div>
+
+                <!-- Remaches inferiores -->
+                <div class="bc-rivet-row bottom">
+                    <span class="bc-rivet"></span><span class="bc-rivet"></span><span class="bc-rivet"></span><span class="bc-rivet"></span>
+                </div>
+            </div>
+
+            <!-- SOUNDBOARD / EFECTOS DE AUDIO EN EL STREAM -->
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-volume-high"></i> Soundboard en Vivo (Audio Stream)</span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px;">
+                    Dispara efectos de audio directos a la transmisión sin micrófonos adicionales:
+                </p>
+                <div class="btn-row">
+                    <button class="btn btn-blue" onclick="triggerSound('whistle_1')"><i class="fa-solid fa-bullhorn"></i> 1 Pitazo</button>
+                    <button class="btn btn-yellow" onclick="triggerSound('whistle_2')"><i class="fa-solid fa-bullhorn"></i> 2 Pitazos</button>
+                    <button class="btn btn-red" onclick="triggerSound('whistle_3')"><i class="fa-solid fa-bullhorn"></i> 3 Pitazos</button>
+                    <button class="btn btn-orange" onclick="triggerSound('buzzer')"><i class="fa-solid fa-bell"></i> Chicharra</button>
+                    <button class="btn btn-gold" onclick="triggerSound('horn')"><i class="fa-solid fa-bullhorn"></i> Bocina Gol</button>
+                </div>
+            </div>
+
+            <!-- PLACA DE RESULTADO FINAL / POST-MATCH -->
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-image"></i> Placa de Resultado Final</span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px;">
+                    Muestra en OBS una placa televisiva de pantalla completa con el resultado final:
+                </p>
+                <div class="btn-row">
+                    <button class="btn btn-green" style="padding: 12px;" onclick="triggerSummary(25)">
+                        <i class="fa-solid fa-tv"></i> MOSTRAR PLACA FINAL EN OBS
+                    </button>
+                    <button class="btn btn-red" style="padding: 12px;" onclick="hideSummary()">
+                        <i class="fa-solid fa-eye-slash"></i> OCULTAR PLACA
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PÁGINA 2: GESTOR DE EQUIPOS Y PLANTILLAS ==================== -->
+        <section id="pageTeams" class="tab-page">
+            <!-- DISPARADOR DE PLACA DE ALINEACIONES EN PANTALLA -->
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-clipboard-user"></i> Formaciones Oficiales en Pantalla (Starting XI)</span>
+                </div>
+                <p style="font-size: 0.82rem; color: var(--text-dim); margin-bottom: 10px;">
+                    Muestra en OBS una placa televisiva profesional con los 11 titulares, dorsal, DT y suplentes:
+                </p>
+                <div class="btn-row">
+                    <button class="btn btn-blue" style="padding: 12px;" onclick="triggerLineup('local', 18)">
+                        <i class="fa-solid fa-users-viewfinder"></i> Formación LOCAL
+                    </button>
+                    <button class="btn btn-green" style="padding: 12px;" onclick="triggerLineup('visitante', 18)">
+                        <i class="fa-solid fa-users-viewfinder"></i> Formación VISITANTE
+                    </button>
+                    <button class="btn btn-red" style="padding: 12px;" onclick="hideLineup()">
+                        <i class="fa-solid fa-eye-slash"></i> Ocultar
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-shield-halved"></i> Biblioteca de Equipos Guardados</span>
+                    <button class="btn btn-blue" style="padding: 4px 8px; font-size: 0.75rem;" onclick="loadTeamsLibrary()">
+                        <i class="fa-solid fa-arrows-rotate"></i> Actualizar
+                    </button>
+                </div>
+                <p style="font-size: 0.82rem; color: var(--text-dim); margin-bottom: 12px;">
+                    Guarda tus clubes con días de anticipación con su escudo y plantilla de jugadores. Al iniciar el partido, solo presiona <strong>"Poner como LOCAL"</strong> o <strong>"VISITANTE"</strong>.
+                </p>
+                <div id="savedTeamsList">
+                    <!-- Equipos cargados dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Creador / Editor de Equipo -->
+            <div class="card">
+                <div class="card-title">
+                    <span id="editorTeamTitle"><i class="fa-solid fa-pen-to-square"></i> Creador / Editor de Club</span>
+                    <button class="btn" style="padding: 4px 8px; font-size: 0.75rem;" onclick="resetTeamEditor()">Limpiar</button>
+                </div>
+
+                <input id="editTeamId" type="hidden" value="">
+
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Nombre del Equipo:</label>
+                <input id="editTeamName" type="text" class="team-header-input" placeholder="Ej. Club Atlético San Martín">
+
+                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 10px;">
+                    <label style="font-size: 0.8rem; color: var(--text-dim);">Color Club:</label>
+                    <input id="editTeamColor" type="color" value="#1e3a8a" style="border: none; width: 44px; height: 32px; border-radius: 6px; cursor: pointer; background: transparent;">
+                    <label style="font-size: 0.8rem; color: var(--text-dim); margin-left: 8px;">DT / Entrenador:</label>
+                    <input id="editTeamCoach" type="text" class="team-header-input" style="flex: 1; margin-bottom: 0;" placeholder="Ej. Marcelo Gallardo">
+                </div>
+
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+                    <img id="editTeamLogoPreview" src="/uploads/default_local.png" class="item-thumb">
+                    <label class="btn btn-blue" style="flex: 1; cursor: pointer;">
+                        <i class="fa-solid fa-upload"></i> Subir Escudo
+                        <input type="file" accept="image/*" style="display: none;" onchange="uploadGenericLogo(this.files[0])">
+                    </label>
+                    <input id="editTeamLogoUrl" type="hidden" value="/uploads/default_local.png">
+                </div>
+
+                <div class="card-title" style="margin-top: 8px;">
+                    <span>Jugadores del Equipo (<span id="countPlayersEdit">0</span>)</span>
+                </div>
+
+                <!-- Formulario Agregar Jugador -->
+                <div style="display: grid; grid-template-columns: 70px 1fr 90px; gap: 6px; margin-bottom: 8px;">
+                    <input id="newPNum" type="number" class="team-header-input" placeholder="N°" value="10">
+                    <input id="newPName" type="text" class="team-header-input" placeholder="Nombre completo" value="Jugador">
+                    <select id="newPType" class="select-input" style="padding: 6px; margin-bottom: 0;">
+                        <option value="starter">Titular</option>
+                        <option value="sub">Suplente</option>
+                    </select>
+                </div>
+                <button class="btn btn-green" style="width: 100%; margin-bottom: 12px;" onclick="addPlayerToCurrentEdit()">
+                    <i class="fa-solid fa-plus"></i> Agregar Jugador a la Plantilla
+                </button>
+
+                <!-- Lista de Jugadores en Edición -->
+                <div id="editPlayersChips" style="max-height: 200px; overflow-y: auto; background: #090f1d; border: 1px solid var(--card-border); border-radius: 8px; padding: 8px; margin-bottom: 12px;">
+                    <!-- Chips de jugadores -->
+                </div>
+
+                <button class="btn btn-gold" style="width: 100%; padding: 12px; font-size: 1rem;" onclick="saveTeamToLibrary()">
+                    <i class="fa-solid fa-floppy-disk"></i> GUARDAR EQUIPO EN BIBLIOTECA
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== PÁGINA 3: TARJETAS ==================== -->
+        <section id="pageEvents" class="tab-page">
+            <div class="card">
+                <div class="card-title"><span><i class="fa-solid fa-id-card"></i> Sancionar Tarjetas (🟨 / 🟥)</span></div>
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Equipo:</label>
+                <select id="cardTeamSelect" class="select-input" onchange="renderCardPlayerOptions()">
+                    <option value="local">LOCAL</option>
+                    <option value="visitante">VISITANTE</option>
+                </select>
+
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Jugador:</label>
+                <select id="cardPlayerSelect" class="select-input"></select>
+
+                <div class="btn-row" style="margin-top: 8px;">
+                    <button class="btn btn-yellow" onclick="sendCard('yellow')">🟨 Tarjeta Amarilla</button>
+                    <button class="btn btn-red" onclick="sendCard('red')">🟥 Tarjeta Roja</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PÁGINA 4: CAMBIOS (SUSTITUCIONES) ==================== -->
+        <section id="pageSubs" class="tab-page">
+            <div class="card">
+                <div class="card-title"><span><i class="fa-solid fa-arrow-right-arrow-left"></i> Sustituciones</span></div>
+                
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Equipo:</label>
+                <select id="subTeamSelect" class="select-input" onchange="renderSubOptions()">
+                    <option value="local">LOCAL</option>
+                    <option value="visitante">VISITANTE</option>
+                </select>
+
+                <label style="font-size: 0.8rem; color: #f87171; font-weight: 700;">🔻 Sale Jugador (Titular):</label>
+                <select id="subPlayerOutSelect" class="select-input"></select>
+
+                <label style="font-size: 0.8rem; color: #4ade80; font-weight: 700;">🔺 Entra Jugador (Suplente):</label>
+                <select id="subPlayerInSelect" class="select-input"></select>
+
+                <button class="btn btn-blue" style="width: 100%; padding: 14px; font-size: 1rem; margin-top: 8px;" onclick="triggerSubInOBS()">
+                    <i class="fa-solid fa-play"></i> MOSTRAR CAMBIO EN PANTALLA
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== PÁGINA 5: PAUTA & SPONSORS ==================== -->
+        <section id="pageDeck" class="tab-page">
+            <!-- REPLAY BUFFER INTELIGENTE -->
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-rotate-left"></i> Repetición Instantánea Inteligente</span>
+                    <span id="replayCountdownBadge" style="color: var(--yellow); font-weight: 800; font-size: 0.8rem; display: none;">EN REPETICIÓN (12s)</span>
+                </div>
+                <p style="font-size: 0.82rem; color: var(--text-dim); margin-bottom: 10px;">
+                    Guarda el búfer de OBS, pasa a la escena de Repetición y <strong>vuelve solo a la cámara en vivo</strong> tras el clip.
+                </p>
+                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 0.8rem; color: var(--text-dim); font-weight: 700;">Duración:</span>
+                    <button id="btnRep8" class="btn" onclick="setReplayDuration(8)">8 seg</button>
+                    <button id="btnRep12" class="btn btn-blue" onclick="setReplayDuration(12)">12 seg</button>
+                    <button id="btnRep15" class="btn" onclick="setReplayDuration(15)">15 seg</button>
+                </div>
+                <button class="deck-btn red" style="width: 100%;" onclick="triggerSmartReplay()">
+                    <i class="fa-solid fa-rotate-left" style="color: var(--red);"></i>
+                    <span>DISPARAR REPLAY BUFFER CON AUTO-RETORNO</span>
+                </button>
+                <p style="font-size: 0.72rem; color: #64748b; margin-top: 8px;">
+                    * Requiere tener activo el Búfer de repetición en OBS (Ajustes -> Salida -> Búfer de repetición).
+                </p>
+            </div>
+
+            <!-- GESTOR Y CARGA DE SPONSORS -->
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-crown"></i> Cargar Nuevo Patrocinador</span>
+                </div>
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Nombre / Marca:</label>
+                <input id="sponsorTitleInput" type="text" class="team-header-input" placeholder="Ej. Supermercado Norte">
+                
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                    <img id="sponsorPreviewImg" src="https://via.placeholder.com/80x40?text=LOGO" class="item-thumb" style="width: 80px; height: 40px;">
+                    <label class="btn btn-blue" style="flex: 1; cursor: pointer;">
+                        <i class="fa-solid fa-upload"></i> Seleccionar Banner/Logo
+                        <input id="sponsorFileInput" type="file" accept="image/*" style="display: none;" onchange="previewSponsorUpload(this.files[0])">
+                    </label>
+                </div>
+                <button class="btn btn-gold" style="width: 100%;" onclick="uploadNewSponsor()">
+                    <i class="fa-solid fa-floppy-disk"></i> Subir y Guardar Patrocinador
+                </button>
+            </div>
+
+            <!-- LISTA DE PATROCINADORES GUARDADOS -->
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-bullhorn"></i> Patrocinadores Listos para Disparar</span>
+                    <button class="btn btn-red" style="padding: 4px 8px; font-size: 0.75rem;" onclick="hideSponsorBanner()">
+                        <i class="fa-solid fa-eye-slash"></i> Ocultar Banner
+                    </button>
+                </div>
+                <div id="sponsorsList">
+                    <!-- Poblado dinámicamente -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PÁGINA 6: CÁMARAS Y ESCENAS ==================== -->
+        <section id="pageCams" class="tab-page">
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-video"></i> Selector de Escenas OBS Studio</span>
+                    <button class="btn" style="padding: 4px 8px; font-size: 0.75rem;" onclick="fetchObsScenes()">
+                        <i class="fa-solid fa-arrows-rotate"></i> Actualizar
+                    </button>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px;">
+                    Conmuta las escenas de OBS en tiempo real. La escena activa aparece con borde verde y la etiqueta <strong>EN VIVO</strong>.
+                </p>
+            </div>
+
+            <!-- Botonera Dinámica de Cámaras -->
+            <div id="camsGrid" class="deck-grid">
+                <!-- Se pobla dinámicamente con las escenas reales de OBS -->
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let currentState = {
+            sport: "futbol",
+            local_name: "LOCAL",
+            visitante_name: "VISITANTE",
+            local_logo: "/uploads/default_local.png",
+            visitante_logo: "/uploads/default_visitante.png",
+            local_score: 0,
+            visitante_score: 0,
+            timer_seconds: 0,
+            timer_running: false,
+            period: "1T",
+            added_time_minutes: 0,
+            show_added_time: false,
+            show_penalties: false,
+            local_penalties: [],
+            visitante_penalties: [],
+            local_fouls: 0,
+            visitante_fouls: 0,
+            local_timeouts: 0,
+            visitante_timeouts: 0,
+            shot_clock_seconds: 24,
+            shot_clock_running: false,
+            local_players: [],
+            visitante_players: []
+        };
+
+        let currentActiveScene = "";
+        let availableScenes = [];
+        let editingPlayersList = [];
+        let uploadedSponsorFile = null;
+
+        let socket;
+        function connectWS() {
+            const loc = window.location;
+            const wsUri = (loc.protocol === "https:" ? "wss://" : "ws://") + loc.host + "/ws/live";
+            socket = new WebSocket(wsUri);
+
+            socket.onopen = () => {
+                const b = document.getElementById("wsBadge");
+                b.className = "status-pill";
+                b.innerHTML = '<i class="fa-solid fa-circle"></i> Sincronizado';
+            };
+
+            socket.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    if (msg.topic === "init_state" || msg.topic === "scoreboard_updated") {
+                        currentState = { ...currentState, ...msg.data };
+                        updateFullUI();
+                    } else if (msg.topic === "scoreboard_timer_tick") {
+                        if (msg.data.timer_seconds !== undefined) {
+                            currentState.timer_seconds = msg.data.timer_seconds;
+                            currentState.timer_running = msg.data.timer_running;
+                        }
+                        if (msg.data.shot_clock_seconds !== undefined) {
+                            currentState.shot_clock_seconds = msg.data.shot_clock_seconds;
+                            currentState.shot_clock_running = msg.data.shot_clock_running;
+                        }
+                        updateTimerDisplay();
+                    } else if (msg.topic === "scene_switched") {
+                        currentActiveScene = msg.data.current_scene;
+                        highlightActiveCamera();
+                    }
+                } catch(e) { console.error("WS Parse error:", e); }
+            };
+
+            socket.onclose = () => {
+                const b = document.getElementById("wsBadge");
+                b.className = "status-pill offline";
+                b.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Reconectando...';
+                setTimeout(connectWS, 2000);
+            };
+        }
+
+        // --- SISTEMA DE PERFILES DE DEPORTE ---
+        function openSportModal() {
+            document.getElementById("sportModal").classList.add("show");
+            document.getElementById("optFutbol").classList.toggle("selected", currentState.sport === "futbol");
+            document.getElementById("optBasquet").classList.toggle("selected", currentState.sport === "basquet");
+        }
+
+        function closeSportModal() {
+            document.getElementById("sportModal").classList.remove("show");
+        }
+
+        function selectSportProfile(sport) {
+            currentState.sport = sport;
+            closeSportModal();
+            fetch('/api/v1/scoreboard/sport/select?sport=' + sport, { method: 'POST' });
+            updateSportUI();
+            fetchObsScenes();
+        }
+
+        function updateSportUI() {
+            const isBasket = (currentState.sport === "basquet");
+            
+            // Header Badge
+            const spIcon = document.getElementById("sportIcon");
+            const spBadgeText = document.getElementById("sportBadgeText");
+            if (spIcon) spIcon.innerText = isBasket ? "🏀" : "⚽";
+            if (spBadgeText) spBadgeText.innerText = isBasket ? "Básquet" : "Fútbol";
+
+            // Contenedores principales de marcador
+            const fbContainer = document.getElementById("footballControlsContainer");
+            const bcContainer = document.getElementById("basketConsoleBoard");
+            if (fbContainer) fbContainer.style.display = isBasket ? "none" : "block";
+            if (bcContainer) bcContainer.style.display = isBasket ? "block" : "none";
+
+            // Fútbol específico / Ocultar pestañas no aplicables
+            const tabEv = document.getElementById("tabEvents");
+            const tabSb = document.getElementById("tabSubs");
+            if (tabEv) tabEv.style.display = isBasket ? "none" : "flex";
+            if (tabSb) tabSb.style.display = isBasket ? "none" : "flex";
+        }
+
+        function openTab(tabId, el) {
+            document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+            if (tabId === 'pageCams') fetchObsScenes();
+            if (tabId === 'pageTeams') loadTeamsLibrary();
+            if (tabId === 'pageDeck') loadSponsorsLibrary();
+        }
+
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60).toString().padStart(2, '0');
+            const s = (sec % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function updateTimerDisplay() {
+            const timeStr = formatTime(currentState.timer_seconds || 0);
+            
+            // Cronómetro Fútbol
+            const tdFb = document.getElementById("timerDisplay");
+            if (tdFb) tdFb.innerText = timeStr;
+            const btnPauseText = document.getElementById("btnPauseResumeText");
+            if (btnPauseText) btnPauseText.innerText = currentState.timer_running ? "Pausar" : "Reanudar";
+
+            // Cronómetro Consola Básquetbol (Stadium Deportes)
+            const bcTime = document.getElementById("bcTimeVal");
+            if (bcTime) bcTime.innerText = timeStr;
+
+            const bcBtnStartPause = document.getElementById("bcBtnStartPause");
+            const bcStartPauseText = document.getElementById("bcStartPauseText");
+            if (bcBtnStartPause && bcStartPauseText) {
+                bcBtnStartPause.className = currentState.timer_running ? "btn btn-yellow" : "btn btn-green";
+                bcStartPauseText.innerText = currentState.timer_running ? "Pausar" : "Iniciar";
+                bcBtnStartPause.innerHTML = currentState.timer_running ? '<i class="fa-solid fa-pause"></i> <span id="bcStartPauseText">Pausar</span>' : '<i class="fa-solid fa-play"></i> <span id="bcStartPauseText">Iniciar</span>';
+            }
+
+            // Shot Clock Consola Básquetbol
+            const scSec = currentState.shot_clock_seconds ?? 24;
+            const bcScVal = document.getElementById("bcShotClockVal");
+            if (bcScVal) {
+                bcScVal.innerText = scSec;
+                bcScVal.style.color = scSec <= 5 ? "#ff1e1e" : "#fb923c";
+            }
+            const bcBtnSc = document.getElementById("bcBtnScToggle");
+            if (bcBtnSc) {
+                bcBtnSc.className = currentState.shot_clock_running ? "btn btn-yellow" : "btn btn-green";
+                bcBtnSc.innerHTML = currentState.shot_clock_running ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
+            }
+        }
+
+        function updateFullUI() {
+            // UI Fútbol
+            const inLoc = document.getElementById("inputLocalName");
+            const inVis = document.getElementById("inputVisitanteName");
+            if (inLoc && document.activeElement !== inLoc) inLoc.value = currentState.local_name || "LOCAL";
+            if (inVis && document.activeElement !== inVis) inVis.value = currentState.visitante_name || "VISITANTE";
+            
+            const scLoc = document.getElementById("valScoreLocal");
+            const scVis = document.getElementById("valScoreVisitante");
+            if (scLoc) scLoc.innerText = currentState.local_score ?? 0;
+            if (scVis) scVis.innerText = currentState.visitante_score ?? 0;
+            
+            const phFb = document.getElementById("phaseBadge");
+            if (phFb) phFb.innerText = currentState.period || "1T";
+
+            const imgLoc = document.getElementById("imgLogoLocal");
+            const imgVis = document.getElementById("imgLogoVisitante");
+            if (imgLoc && currentState.local_logo) imgLoc.src = currentState.local_logo;
+            if (imgVis && currentState.visitante_logo) imgVis.src = currentState.visitante_logo;
+
+            // UI Consola Básquetbol (Stadium Deportes)
+            const bcNameL = document.getElementById("bcInputNameLocal");
+            const bcNameV = document.getElementById("bcInputNameVisit");
+            if (bcNameL && document.activeElement !== bcNameL) bcNameL.value = currentState.local_name || "LOCAL";
+            if (bcNameV && document.activeElement !== bcNameV) bcNameV.value = currentState.visitante_name || "VISITA";
+
+            const bcScoreL = document.getElementById("bcScoreValLocal");
+            const bcScoreV = document.getElementById("bcScoreValVisit");
+            if (bcScoreL) bcScoreL.innerText = currentState.local_score ?? 0;
+            if (bcScoreV) bcScoreV.innerText = currentState.visitante_score ?? 0;
+
+            const bcPeriod = document.getElementById("bcPeriodVal");
+            if (bcPeriod) {
+                let pStr = (currentState.period || "1").toUpperCase();
+                pStr = pStr.replace(/Q|T|ER|DO|RO|TO/gi, "").trim();
+                bcPeriod.innerText = pStr || "1";
+            }
+
+            const bcFoulsL = document.getElementById("bcFoulsValLocal");
+            const bcFoulsV = document.getElementById("bcFoulsValVisit");
+            if (bcFoulsL) bcFoulsL.innerText = currentState.local_fouls || 0;
+            if (bcFoulsV) bcFoulsV.innerText = currentState.visitante_fouls || 0;
+
+            const bcBonusL = document.getElementById("bcBonusTagLocal");
+            const bcBonusV = document.getElementById("bcBonusTagVisit");
+            if (bcBonusL) bcBonusL.style.display = ((currentState.local_fouls || 0) >= 5) ? "inline-block" : "none";
+            if (bcBonusV) bcBonusV.style.display = ((currentState.visitante_fouls || 0) >= 5) ? "inline-block" : "none";
+
+            const toL = document.getElementById("bcTimeoutsValLocal");
+            const toV = document.getElementById("bcTimeoutsValVisit");
+            if (toL) toL.innerText = currentState.local_timeouts ?? 5;
+            if (toV) toV.innerText = currentState.visitante_timeouts ?? 5;
+
+            // Tiempo Añadido Fútbol
+            const atBadge = document.getElementById("addedTimeBadge");
+            if (atBadge) {
+                if (currentState.show_added_time && currentState.added_time_minutes > 0) {
+                    atBadge.innerText = `+${currentState.added_time_minutes}'`;
+                } else {
+                    atBadge.innerText = "OCULTO";
+                }
+            }
+
+            // Penales Botón Mostrar/Ocultar
+            const btnPen = document.getElementById("btnTogglePenaltiesOverlay");
+            if (btnPen) {
+                btnPen.innerHTML = currentState.show_penalties ? 
+                    '<i class="fa-solid fa-eye-slash"></i> Ocultar en Pantalla' : 
+                    '<i class="fa-solid fa-eye"></i> Mostrar en Pantalla';
+                btnPen.className = currentState.show_penalties ? 'btn btn-red' : 'btn btn-blue';
+            }
+
+            updateSportUI();
+            updateTimerDisplay();
+            renderPenaltiesDots();
+            renderSubOptions();
+            renderCardPlayerOptions();
+        }
+
+        function renderPenaltiesDots() {
+            document.getElementById("localPenaltiesDots").innerHTML = (currentState.local_penalties || []).map(p => 
+                `<div class="p-dot ${p}">${p === 'scored' ? '⚽' : '❌'}</div>`
+            ).join('');
+
+            document.getElementById("visitantePenaltiesDots").innerHTML = (currentState.visitante_penalties || []).map(p => 
+                `<div class="p-dot ${p}">${p === 'scored' ? '⚽' : '❌'}</div>`
+            ).join('');
+        }
+
+        // --- ACCIONES FÚTBOL ---
+        function triggerWhistlePhase(phase) {
+            fetch('/api/v1/scoreboard/phase/whistle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phase: phase })
+            });
+        }
+
+        function pauseOrResumeTimer() {
+            fetch('/api/v1/scoreboard/timer/control?action=toggle', { method: 'POST' });
+        }
+
+        function resetScoreboardGols() {
+            if (confirm("¿Reiniciar marcador a 0 - 0?")) {
+                fetch('/api/v1/scoreboard/score/reset', { method: 'POST' });
+            }
+        }
+
+        // --- GOAL MODAL & SELECCIÓN DE AUTOR ---
+        let activeGoalTeam = "local";
+
+        function openGoalModal(team) {
+            activeGoalTeam = team;
+            const teamName = (team === "local") ? (currentState.local_name || "LOCAL") : (currentState.visitante_name || "VISITANTE");
+            const subTitle = document.getElementById("goalModalSubtitle");
+            if (subTitle) subTitle.innerText = `Selecciona al autor del gol para ${teamName}:`;
+            
+            // Minuto aproximado según cronómetro
+            const minNum = Math.max(1, Math.floor((currentState.timer_seconds || 0) / 60));
+            const minInput = document.getElementById("goalMinuteInput");
+            if (minInput) minInput.value = `${minNum}'`;
+
+            const players = (team === "local") ? (currentState.local_players || []) : (currentState.visitante_players || []);
+            const listEl = document.getElementById("goalPlayersList");
+            if (listEl) {
+                if (!players || players.length === 0) {
+                    listEl.innerHTML = `
+                        <div style="background: #1e293b; border-radius: 8px; padding: 12px; font-size: 0.82rem; color: var(--text-dim); text-align: center;">
+                            No hay jugadores cargados en la plantilla de <strong>${teamName}</strong>.
+                            <div style="color: #60a5fa; margin-top: 6px;">Puedes anotar un <em>Gol Genérico</em> con el botón de arriba o cargar la plantilla en <strong>Equipos</strong>.</div>
+                        </div>
+                    `;
+                } else {
+                    listEl.innerHTML = players.map(p => `
+                        <button class="btn" style="text-align: left; justify-content: flex-start; padding: 10px 12px; border-color: #334155;" onclick='submitGoalWithPlayer(${JSON.stringify(p)})'>
+                            <span style="background: #2563eb; color: #fff; font-weight: 900; padding: 3px 8px; border-radius: 6px; font-size: 0.85rem; margin-right: 8px;">#${p.number}</span>
+                            <strong style="color: #fff; flex: 1;">${p.name}</strong>
+                            <span style="font-size: 0.75rem; color: #94a3b8;">${p.is_starter ? 'Titular' : 'Suplente'}</span>
+                        </button>
+                    `).join('');
+                }
+            }
+
+            document.getElementById("goalModal").classList.add("show");
+        }
+
+        function closeGoalModal() {
+            document.getElementById("goalModal").classList.remove("show");
+        }
+
+        function submitGoalWithPlayer(player) {
+            closeGoalModal();
+            const minInput = document.getElementById("goalMinuteInput");
+            const min = (minInput && minInput.value.trim()) ? minInput.value.trim() : `${Math.max(1, Math.floor((currentState.timer_seconds || 0) / 60))}'`;
+            const playerName = player ? player.name : "Goleador";
+            const playerNumber = player ? player.number : undefined;
+
+            fetch('/api/v1/scoreboard/goal/trigger', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    team: activeGoalTeam,
+                    player_name: playerName,
+                    player_number: playerNumber,
+                    minute: min,
+                    duration: 7
+                })
+            });
+        }
+
+        // --- COLORES PRIMARIOS DE EQUIPOS ---
+        function setTeamColor(team, hex) {
+            if (team === "local") currentState.local_color = hex;
+            if (team === "visitante") currentState.visitante_color = hex;
+            fetch('/api/v1/scoreboard/colors', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ team: team, color: hex })
+            });
+        }
+
+        // --- SOUNDBOARD DE AUDIO EN VIVO ---
+        function triggerSound(cue) {
+            fetch('/api/v1/scoreboard/sound/trigger', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cue: cue })
+            });
+        }
+
+        // --- ALINEACIONES (STARTING XI) Y PLACA FINAL ---
+        function triggerLineup(team, duration = 18) {
+            fetch('/api/v1/scoreboard/lineup/trigger', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ team: team, duration: duration })
+            });
+        }
+
+        function hideLineup() {
+            fetch('/api/v1/scoreboard/lineup/hide', { method: 'POST' });
+        }
+
+        function triggerSummary(duration = 25) {
+            fetch('/api/v1/scoreboard/summary/trigger', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ duration: duration })
+            });
+        }
+
+        function hideSummary() {
+            fetch('/api/v1/scoreboard/summary/hide', { method: 'POST' });
+        }
+
+        // --- REPETICIÓN INSTANTÁNEA INTELIGENTE ---
+        let selectedReplayDuration = 12;
+        let replayTimerId = null;
+
+        function setReplayDuration(sec) {
+            selectedReplayDuration = sec;
+            [8, 12, 15].forEach(s => {
+                const b = document.getElementById(`btnRep${s}`);
+                if (b) {
+                    if (s === sec) {
+                        b.className = "btn btn-blue";
+                    } else {
+                        b.className = "btn";
+                    }
+                }
+            });
+        }
+
+        async function triggerSmartReplay() {
+            const badge = document.getElementById("replayCountdownBadge");
+            if (badge) {
+                badge.style.display = "inline-block";
+                badge.innerText = `EN REPETICIÓN (${selectedReplayDuration}s)`;
+                if (replayTimerId) clearInterval(replayTimerId);
+                let remaining = selectedReplayDuration;
+                replayTimerId = setInterval(() => {
+                    remaining--;
+                    if (remaining <= 0) {
+                        clearInterval(replayTimerId);
+                        badge.style.display = "none";
+                    } else {
+                        badge.innerText = `EN REPETICIÓN (${remaining}s)`;
+                    }
+                }, 1000);
+            }
+            fetch(`/api/v1/switcher/replay?duration=${selectedReplayDuration}`, { method: 'POST' });
+        }
+
+        function setAddedTime(min) {
+            fetch(`/api/v1/scoreboard/added_time?minutes=${min}`, { method: 'POST' });
+        }
+
+        function applyCustomAddedTime() {
+            const val = parseInt(document.getElementById("customAddedTimeInput").value) || 0;
+            if (val > 0) {
+                setAddedTime(val);
+            }
+        }
+
+        function penaltyAction(team, res) {
+            fetch(`/api/v1/scoreboard/penalties/action?team=${team}&result=${res}`, { method: 'POST' });
+        }
+
+        function togglePenaltiesVisibility() {
+            fetch('/api/v1/scoreboard/penalties/action?team=local&result=toggle', { method: 'POST' });
+        }
+
+        // --- ACCIONES BÁSQUET ---
+        function setBasketQuarter(q, seconds) {
+            const qMap = { '1Q': '1ST', '2Q': '2ND', '3Q': '3RD', '4Q': '4TH', 'OT': 'OT' };
+            const qVal = qMap[q] || q;
+            fetch(`/api/v1/scoreboard/period/set?period=${encodeURIComponent(qVal)}`, { method: 'POST' });
+            if (seconds !== undefined) {
+                setTimerSeconds(seconds);
+            }
+            shotClockAction('reset_24');
+        }
+
+        function adjustTime(deltaSec) {
+            fetch(`/api/v1/scoreboard/timer/adjust?delta=${deltaSec}`, { method: 'POST' });
+        }
+
+        function changeFouls(team, delta) {
+            fetch(`/api/v1/scoreboard/fouls?team=${team}&delta=${delta}`, { method: 'POST' });
+        }
+
+        function resetFouls(team) {
+            fetch(`/api/v1/scoreboard/fouls?team=${team}&action=reset`, { method: 'POST' });
+        }
+
+        function changeTimeouts(team, delta) {
+            fetch(`/api/v1/scoreboard/timeouts?team=${team}&delta=${delta}`, { method: 'POST' });
+        }
+
+        function setPossession(team) {
+            fetch(`/api/v1/scoreboard/possession?team=${team}`, { method: 'POST' });
+        }
+
+        function setTimerSeconds(sec) {
+            fetch(`/api/v1/scoreboard/timer/control?action=set&target_seconds=${sec}`, { method: 'POST' });
+        }
+
+        function timerAction(action) {
+            fetch(`/api/v1/scoreboard/timer/control?action=${action}`, { method: 'POST' });
+        }
+
+        // --- RELOJ DE POSESIÓN (SHOT CLOCK 24s/14s) ---
+        function shotClockAction(action) {
+            fetch(`/api/v1/scoreboard/shot_clock/control?action=${action}`, { method: 'POST' });
+        }
+
+        function shotClockDelta(delta) {
+            fetch(`/api/v1/scoreboard/shot_clock/control?action=delta&delta=${delta}`, { method: 'POST' });
+        }
+
+
+        // --- MODAL DE RED / QR / OBS RECONNECT ---
+        async function openNetworkModal() {
+            document.getElementById("networkModal").classList.add("show");
+            await loadNetworkInfo();
+        }
+
+        function closeNetworkModal() {
+            document.getElementById("networkModal").classList.remove("show");
+        }
+
+        async function loadNetworkInfo() {
+            try {
+                const res = await fetch('/api/v1/system/network-info');
+                if (res.ok) {
+                    const data = await res.json();
+                    const url = data.remote_control_url || `http://${window.location.host}`;
+                    document.getElementById("netUrlText").innerText = url;
+                    
+                    // Generar QR usando API rápida y confiable
+                    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(url)}`;
+                    document.getElementById("qrImg").src = qrUrl;
+
+                    const obsText = document.getElementById("obsConnText");
+                    if (obsText) {
+                        obsText.innerText = data.obs_connected ? "🟢 Conectado con éxito" : "🔴 Desconectado (Verifica OBS)";
+                        obsText.style.color = data.obs_connected ? "#10b981" : "#ef4444";
+                    }
+                }
+            } catch(e) {
+                console.warn("Error cargando network info:", e);
+            }
+        }
+
+        async function reconnectObsWS() {
+            const obsText = document.getElementById("obsConnText");
+            if (obsText) {
+                obsText.innerText = "⏳ Intentando conectar con OBS...";
+                obsText.style.color = "#f59e0b";
+            }
+            try {
+                const res = await fetch('/api/v1/system/obs/reconnect', { method: 'POST' });
+                const data = await res.json();
+                if (obsText) {
+                    obsText.innerText = data.connected ? "🟢 Conectado con éxito" : "🔴 Error: " + data.message;
+                    obsText.style.color = data.connected ? "#10b981" : "#ef4444";
+                }
+                fetchObsScenes();
+                fetchStreamHealth();
+            } catch(e) {
+                if (obsText) {
+                    obsText.innerText = "🔴 Error al contactar backend";
+                    obsText.style.color = "#ef4444";
+                }
+            }
+        }
+
+        function changeFouls(team, delta) {
+            fetch(`/api/v1/scoreboard/fouls?team=${team}&delta=${delta}`, { method: 'POST' });
+        }
+
+        function changeTimeouts(team, delta) {
+            fetch(`/api/v1/scoreboard/timeouts?team=${team}&delta=${delta}`, { method: 'POST' });
+        }
+
+        function resetFouls(team) {
+            fetch(`/api/v1/scoreboard/fouls?team=${team}&delta=0&set_zero=true`, { method: 'POST' });
+        }
+
+        function adjustTime(sec) {
+            const current = currentState.timer_seconds || 0;
+            const newSec = Math.max(0, current + sec);
+            setTimerSeconds(newSec);
+        }
+
+        function syncTeamsFromConsole() {
+            const lName = document.getElementById("bcInputNameLocal")?.value || "LOCAL";
+            const vName = document.getElementById("bcInputNameVisit")?.value || "VISITA";
+            currentState.local_name = lName;
+            currentState.visitante_name = vName;
+            const inL = document.getElementById("inputLocalName");
+            const inV = document.getElementById("inputVisitanteName");
+            if (inL) inL.value = lName;
+            if (inV) inV.value = vName;
+            fetch('/api/v1/scoreboard/teams/names', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    local_name: lName,
+                    visitante_name: vName,
+                    local_abbrev: lName.toUpperCase(),
+                    visitante_abbrev: vName.toUpperCase()
+                })
+            });
+        }
+
+        // --- GENERAL MARCADOR ---
+        function changeScore(team, delta) {
+            fetch(`/api/v1/scoreboard/score?team=${team}&delta=${delta}`, { method: 'POST' });
+        }
+
+        function syncTeams() {
+            const l = document.getElementById("inputLocalName").value;
+            const v = document.getElementById("inputVisitanteName").value;
+            currentState.local_name = l;
+            currentState.visitante_name = v;
+            const bcL = document.getElementById("bcInputNameLocal");
+            const bcV = document.getElementById("bcInputNameVisit");
+            if (bcL) bcL.value = l;
+            if (bcV) bcV.value = v;
+            fetch('/api/v1/scoreboard/teams/names', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    local_name: l,
+                    visitante_name: v,
+                    local_abbrev: l.toUpperCase(),
+                    visitante_abbrev: v.toUpperCase()
+                })
+            });
+        }
+
+        function togglePossession() {
+            fetch('/api/v1/scoreboard/possession?team=toggle', { method: 'POST' });
+        }
+
+        function setPossession(team) {
+            fetch(`/api/v1/scoreboard/possession?team=${team}`, { method: 'POST' });
+        }
+
+        function uploadLogo(team, file) {
+            if (!file) return;
+            const fd = new FormData();
+            fd.append("team", team);
+            fd.append("file", file);
+            fetch('/api/v1/teams/upload_logo', { method: 'POST', body: fd });
+        }
+
+        // --- BIBLIOTECA DE EQUIPOS Y PLANTILLAS ---
+        async function loadTeamsLibrary() {
+            try {
+                const res = await fetch('/api/v1/teams/library');
+                const data = await res.json();
+                const listEl = document.getElementById("savedTeamsList");
+                if (!data.teams || data.teams.length === 0) {
+                    listEl.innerHTML = '<p style="color: var(--text-dim); font-size: 0.85rem;">No hay equipos guardados aún. Usa el creador de abajo.</p>';
+                    return;
+                }
+                listEl.innerHTML = data.teams.map(t => `
+                    <div class="item-card">
+                        <img src="${t.logo_url || '/uploads/default_local.png'}" class="item-thumb" onerror="this.src='/uploads/default_local.png'">
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 800; font-size: 0.95rem; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${t.color || '#1e3a8a'}; margin-right:4px;"></span>${t.name}
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--text-dim);">${(t.players || []).length} jugadores ${t.coach ? '• DT: ' + t.coach : ''}</div>
+                        </div>
+                        <div style="display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end;">
+                            <button class="btn btn-blue" style="padding: 6px 8px; font-size: 0.75rem;" onclick="assignTeamFromLib('${t.id}', 'local')" title="Asignar como equipo local">
+                                <i class="fa-solid fa-house"></i> Local
+                            </button>
+                            <button class="btn btn-green" style="padding: 6px 8px; font-size: 0.75rem;" onclick="assignTeamFromLib('${t.id}', 'visitante')" title="Asignar como equipo visitante">
+                                <i class="fa-solid fa-plane"></i> Visitante
+                            </button>
+                            <button class="btn" style="padding: 6px 8px; font-size: 0.75rem;" onclick='editTeamInForm(${JSON.stringify(t)})' title="Editar">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="btn btn-red" style="padding: 6px 8px; font-size: 0.75rem;" onclick="deleteTeamFromLib('${t.id}')" title="Eliminar">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.warn("Error cargando biblioteca de equipos:", e);
+            }
+        }
+
+        async function assignTeamFromLib(teamId, role) {
+            const res = await fetch(`/api/v1/teams/library/assign?team_id=${teamId}&role=${role}`, { method: 'POST' });
+            if (res.ok) {
+                const data = await res.json();
+                alert(`Equipo ${data.team_name} asignado como ${role.toUpperCase()} con ${data.players_count} jugadores.`);
+            }
+        }
+
+        async function deleteTeamFromLib(teamId) {
+            if (confirm("¿Eliminar este equipo de la biblioteca?")) {
+                await fetch(`/api/v1/teams/library/delete?team_id=${teamId}`, { method: 'POST' });
+                loadTeamsLibrary();
+            }
+        }
+
+        function resetTeamEditor() {
+            document.getElementById("editTeamId").value = "";
+            document.getElementById("editTeamName").value = "";
+            document.getElementById("editTeamColor").value = "#1e3a8a";
+            document.getElementById("editTeamCoach").value = "";
+            document.getElementById("editTeamLogoUrl").value = "/uploads/default_local.png";
+            document.getElementById("editTeamLogoPreview").src = "/uploads/default_local.png";
+            document.getElementById("editorTeamTitle").innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Creador de Club';
+            editingPlayersList = [];
+            renderEditingPlayers();
+        }
+
+        function editTeamInForm(team) {
+            document.getElementById("editTeamId").value = team.id || "";
+            document.getElementById("editTeamName").value = team.name || "";
+            document.getElementById("editTeamColor").value = team.color || "#1e3a8a";
+            document.getElementById("editTeamCoach").value = team.coach || "";
+            document.getElementById("editTeamLogoUrl").value = team.logo_url || "/uploads/default_local.png";
+            document.getElementById("editTeamLogoPreview").src = team.logo_url || "/uploads/default_local.png";
+            document.getElementById("editorTeamTitle").innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Editando: ${team.name}`;
+            editingPlayersList = [...(team.players || [])];
+            renderEditingPlayers();
+            // Scroll suave hacia el editor
+            document.getElementById("editorTeamTitle").scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function addPlayerToCurrentEdit() {
+            const num = parseInt(document.getElementById("newPNum").value) || 1;
+            const name = document.getElementById("newPName").value.trim() || "Jugador";
+            const isStarter = (document.getElementById("newPType").value === "starter");
+            editingPlayersList.push({
+                id: Date.now().toString(),
+                number: num,
+                name: name,
+                is_starter: isStarter,
+                position: isStarter ? "TIT" : "SUP"
+            });
+            document.getElementById("newPName").value = "";
+            renderEditingPlayers();
+        }
+
+        function removePlayerFromEdit(idx) {
+            editingPlayersList.splice(idx, 1);
+            renderEditingPlayers();
+        }
+
+        function renderEditingPlayers() {
+            document.getElementById("countPlayersEdit").innerText = editingPlayersList.length;
+            const container = document.getElementById("editPlayersChips");
+            if (editingPlayersList.length === 0) {
+                container.innerHTML = '<span style="color: var(--text-dim); font-size: 0.8rem;">Sin jugadores agregados aún.</span>';
+                return;
+            }
+            container.innerHTML = editingPlayersList.map((p, idx) => `
+                <span class="player-chip ${p.is_starter ? 'starter' : ''}">
+                    <strong>#${p.number}</strong> ${p.name} (${p.is_starter ? 'Titular' : 'Suplente'})
+                    <i class="fa-solid fa-xmark" style="cursor: pointer; margin-left: 4px; color: #ef4444;" onclick="removePlayerFromEdit(${idx})"></i>
+                </span>
+            `).join('');
+        }
+
+        async function uploadGenericLogo(file) {
+            if (!file) return;
+            const fd = new FormData();
+            fd.append("file", file);
+            const res = await fetch('/api/v1/teams/upload_generic_logo', { method: 'POST', body: fd });
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById("editTeamLogoUrl").value = data.url;
+                document.getElementById("editTeamLogoPreview").src = data.url;
+            }
+        }
+
+        async function saveTeamToLibrary() {
+            const name = document.getElementById("editTeamName").value.trim();
+            if (!name) {
+                alert("Por favor escribe el nombre del equipo.");
+                return;
+            }
+            const payload = {
+                id: document.getElementById("editTeamId").value || undefined,
+                name: name,
+                color: document.getElementById("editTeamColor").value || "#1e3a8a",
+                coach: document.getElementById("editTeamCoach").value.trim() || undefined,
+                logo_url: document.getElementById("editTeamLogoUrl").value,
+                players: editingPlayersList
+            };
+            const res = await fetch('/api/v1/teams/library/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                alert(`Equipo ${name} guardado correctamente.`);
+                resetTeamEditor();
+                loadTeamsLibrary();
+            }
+        }
+
+        // --- SUSTITUCIONES Y TARJETAS ---
+        function renderSubOptions() {
+            const team = document.getElementById("subTeamSelect").value;
+            const players = team === "local" ? (currentState.local_players || []) : (currentState.visitante_players || []);
+            const starters = players.filter(p => p.is_starter);
+            const subs = players.filter(p => !p.is_starter);
+
+            document.getElementById("subPlayerOutSelect").innerHTML = starters.length > 0 ? 
+                starters.map(p => `<option value="${p.id}">#${p.number} - ${p.name}</option>`).join('') :
+                '<option value="">Sin titulares (carga en Equipos)</option>';
+
+            document.getElementById("subPlayerInSelect").innerHTML = subs.length > 0 ? 
+                subs.map(p => `<option value="${p.id}">#${p.number} - ${p.name}</option>`).join('') :
+                '<option value="">Sin suplentes (carga en Equipos)</option>';
+        }
+
+        function renderCardPlayerOptions() {
+            const team = document.getElementById("cardTeamSelect").value;
+            const players = team === "local" ? (currentState.local_players || []) : (currentState.visitante_players || []);
+            document.getElementById("cardPlayerSelect").innerHTML = players.length > 0 ? 
+                players.map(p => `<option value="${p.id}">#${p.number} - ${p.name} (${p.is_starter ? 'Titular' : 'Suplente'})</option>`).join('') :
+                '<option value="">Sin jugadores cargados</option>';
+        }
+
+        function sendCard(cardType) {
+            const team = document.getElementById("cardTeamSelect").value;
+            const players = team === "local" ? currentState.local_players : currentState.visitante_players;
+            const pId = document.getElementById("cardPlayerSelect").value;
+            const p = players.find(x => x.id == pId) || { id: "1", number: 10, name: "Jugador" };
+
+            fetch('/api/v1/scoreboard/card/trigger', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ team: team, player: p, card_type: cardType, duration: 6 })
+            });
+        }
+
+        function triggerSubInOBS() {
+            const team = document.getElementById("subTeamSelect").value;
+            const players = team === "local" ? currentState.local_players : currentState.visitante_players;
+            const outId = document.getElementById("subPlayerOutSelect").value;
+            const inId = document.getElementById("subPlayerInSelect").value;
+            
+            const pOut = players.find(p => p.id == outId) || { number: 10, name: "Jugador Sale", position: "DEL" };
+            const pIn = players.find(p => p.id == inId) || { number: 18, name: "Jugador Entra", position: "DEL" };
+
+            fetch('/api/v1/scoreboard/substitution/trigger', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ team: team, player_out: pOut, player_in: pIn, duration: 8 })
+            });
+        }
+
+        // --- SPONSORS / PAUTA ---
+        function previewSponsorUpload(file) {
+            if (!file) return;
+            uploadedSponsorFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById("sponsorPreviewImg").src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadNewSponsor() {
+            const title = document.getElementById("sponsorTitleInput").value.trim();
+            if (!title) {
+                alert("Por favor escribe el nombre del sponsor.");
+                return;
+            }
+            if (!uploadedSponsorFile) {
+                alert("Por favor selecciona una imagen o logo para el sponsor.");
+                return;
+            }
+            const fd = new FormData();
+            fd.append("title", title);
+            fd.append("file", uploadedSponsorFile);
+            const res = await fetch('/api/v1/ads/upload', { method: 'POST', body: fd });
+            if (res.ok) {
+                alert("Patrocinador subido con éxito.");
+                document.getElementById("sponsorTitleInput").value = "";
+                uploadedSponsorFile = null;
+                document.getElementById("sponsorPreviewImg").src = "https://via.placeholder.com/80x40?text=LOGO";
+                loadSponsorsLibrary();
+            }
+        }
+
+        async function loadSponsorsLibrary() {
+            try {
+                const res = await fetch('/api/v1/ads/library');
+                const data = await res.json();
+                const listEl = document.getElementById("sponsorsList");
+                if (!data.sponsors || data.sponsors.length === 0) {
+                    listEl.innerHTML = '<p style="color: var(--text-dim); font-size: 0.85rem;">No hay sponsors cargados. Sube uno arriba.</p>';
+                    return;
+                }
+                listEl.innerHTML = data.sponsors.map(s => `
+                    <div class="item-card">
+                        ${s.image_url ? `<img src="${s.image_url}" class="item-thumb" style="width: 70px; height: 35px; object-fit: contain;">` : '<div class="item-thumb" style="display:flex;align-items:center;justify-content:center;">⭐</div>'}
+                        <div style="flex: 1; min-width: 0; font-weight: 800; font-size: 0.9rem; color: #fff;">
+                            ${s.title}
+                        </div>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="btn btn-green" style="padding: 6px 10px; font-size: 0.75rem;" onclick="triggerSponsor('${s.title}', '${s.image_url || ''}')">
+                                <i class="fa-solid fa-play"></i> Mostrar
+                            </button>
+                            <button class="btn btn-red" style="padding: 6px 8px; font-size: 0.75rem;" onclick="deleteSponsor('${s.id}')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch(e) {
+                console.warn("Error cargando sponsors:", e);
+            }
+        }
+
+        function triggerSponsor(title, imgUrl) {
+            fetch('/api/v1/ads/trigger', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: title, image_url: imgUrl, duration: 10 })
+            });
+        }
+
+        function hideSponsorBanner() {
+            fetch('/api/v1/ads/hide', { method: 'POST' });
+        }
+
+        function triggerReplay() {
+            fetch('/api/v1/system/replay', { method: 'POST' });
+        }
+
+        // --- CÁMARAS Y ESCENAS OBS ---
+        async function fetchObsScenes() {
+            try {
+                const res = await fetch('/api/v1/switcher/scenes');
+                if (res.ok) {
+                    availableScenes = await res.json();
+                    renderCameraButtons();
+                }
+            } catch(e) { console.warn("No se pudo obtener escenas de OBS:", e); }
+        }
+
+        function renderCameraButtons() {
+            const grid = document.getElementById("camsGrid");
+            if (!availableScenes || availableScenes.length === 0) {
+                // Escenas por defecto según el deporte
+                const isBasket = (currentState.sport === "basquet");
+                availableScenes = isBasket ? 
+                    ["BASQUET_CAM_1", "BASQUET_CAM_2", "BASQUET_CAM_3", "REPETICION", "PUBLICIDAD_FULLSCREEN", "PANTALLA_ESPERA"] :
+                    ["EN_VIVO_CAM_1", "EN_VIVO_CAM_2", "EN_VIVO_CAM_3", "REPETICION", "PUBLICIDAD_FULLSCREEN", "PANTALLA_ESPERA", "Escena"];
+            }
+
+            const iconsMap = {
+                "EN_VIVO_CAM_1": "fa-video",
+                "EN_VIVO_CAM_2": "fa-camera",
+                "EN_VIVO_CAM_3": "fa-futbol",
+                "FUTBOL_CAM_1": "fa-video",
+                "FUTBOL_CAM_2": "fa-camera",
+                "FUTBOL_CAM_3": "fa-futbol",
+                "BASQUET_CAM_1": "fa-video",
+                "BASQUET_CAM_2": "fa-camera",
+                "BASQUET_CAM_3": "fa-basketball",
+                "REPETICION": "fa-rotate-left",
+                "PUBLICIDAD_FULLSCREEN": "fa-rectangle-ad",
+                "PANTALLA_ESPERA": "fa-clock",
+                "Escena": "fa-display"
+            };
+
+            grid.innerHTML = availableScenes.map(sc => {
+                const icon = iconsMap[sc] || "fa-film";
+                const isLive = (currentActiveScene === sc);
+                return `
+                    <button id="camBtn_${sc}" class="deck-btn ${isLive ? 'active-cam' : ''}" onclick="switchCam('${sc}')">
+                        <span class="live-tag">EN VIVO</span>
+                        <i class="fa-solid ${icon}"></i>
+                        <span>${sc.replace(/_/g, ' ')}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function switchCam(scene) {
+            currentActiveScene = scene;
+            highlightActiveCamera();
+            fetch('/api/v1/switcher/switch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ scene_name: scene })
+            });
+        }
+
+        function highlightActiveCamera() {
+            document.querySelectorAll('.deck-btn').forEach(b => b.classList.remove('active-cam'));
+            const btn = document.getElementById(`camBtn_${currentActiveScene}`);
+            if (btn) btn.classList.add('active-cam');
+        }
+
+        // --- OBS STREAM & RECORD MONITOR / CONTROL ---
+        function openStreamModal() {
+            document.getElementById("streamModal").classList.add("show");
+            fetchStreamHealth();
+        }
+
+        function closeStreamModal() {
+            document.getElementById("streamModal").classList.remove("show");
+        }
+
+        async function fetchStreamHealth() {
+            try {
+                const res = await fetch('/api/v1/switcher/health');
+                if (!res.ok) return;
+                const data = await res.json();
+                const st = data.stream_status || {};
+                const rec = data.record_status || {};
+                const stats = data.stats || {};
+
+                // Barra superior
+                const shStream = document.getElementById("shStreamBadge");
+                const shStreamTime = document.getElementById("shStreamTime");
+                if (shStream && shStreamTime) {
+                    shStream.className = st.output_active ? "sh-badge on" : "sh-badge off";
+                    shStream.innerText = st.output_active ? "STREAM ON" : "STREAM OFF";
+                    shStreamTime.innerText = st.output_timecode || "00:00:00";
+                }
+
+                const shRec = document.getElementById("shRecBadge");
+                const shRecTime = document.getElementById("shRecTime");
+                if (shRec && shRecTime) {
+                    shRec.className = rec.output_active ? "sh-badge on" : "sh-badge off";
+                    shRec.innerText = rec.output_active ? "REC ON" : "REC OFF";
+                    shRecTime.innerText = rec.output_timecode || "00:00:00";
+                }
+
+                const shFps = document.getElementById("shFpsBadge");
+                const shBitrate = document.getElementById("shBitrateBadge");
+                if (shFps && shBitrate) {
+                    shFps.innerText = `${Math.round(stats.active_fps || 60)} FPS`;
+                    shBitrate.innerText = `${Math.round(stats.bitrate_kbps || 0)} kbps`;
+                }
+
+                // Modal
+                const mStream = document.getElementById("modalStreamStatus");
+                const mStreamTime = document.getElementById("modalStreamTime");
+                if (mStream && mStreamTime) {
+                    mStream.innerText = st.output_active ? "EN VIVO (ACTIVO)" : "DETENIDO";
+                    mStream.style.color = st.output_active ? "#10b981" : "#64748b";
+                    mStreamTime.innerText = st.output_timecode || "00:00:00";
+                }
+
+                const mRec = document.getElementById("modalRecStatus");
+                if (mRec) {
+                    mRec.innerText = rec.output_active ? "GRABANDO" : "DETENIDO";
+                    mRec.style.color = rec.output_active ? "#f97316" : "#64748b";
+                }
+
+                const mFps = document.getElementById("modalFpsStatus");
+                if (mFps) {
+                    const dropPct = (stats.dropped_frames_pct || 0).toFixed(1);
+                    mFps.innerText = `${Math.round(stats.active_fps || 60)} FPS (${dropPct}% perdidos)`;
+                }
+
+                const mCpu = document.getElementById("modalCpuStatus");
+                if (mCpu) {
+                    const cpu = (stats.cpu_usage || 0).toFixed(1);
+                    const br = Math.round(stats.bitrate_kbps || 0);
+                    mCpu.innerText = `${cpu}% CPU • ${br} kbps`;
+                }
+
+                const btnStr = document.getElementById("btnToggleStream");
+                if (btnStr) {
+                    btnStr.className = st.output_active ? "btn btn-red" : "btn btn-green";
+                    btnStr.innerHTML = st.output_active ? '<i class="fa-solid fa-stop"></i> Detener Stream' : '<i class="fa-solid fa-tower-broadcast"></i> Iniciar Stream';
+                }
+
+                const btnRec = document.getElementById("btnToggleRecord");
+                if (btnRec) {
+                    btnRec.className = rec.output_active ? "btn btn-red" : "btn btn-orange";
+                    btnRec.innerHTML = rec.output_active ? '<i class="fa-solid fa-stop"></i> Detener Grabación' : '<i class="fa-solid fa-circle-dot"></i> Iniciar Grabación';
+                }
+            } catch (e) {
+                // Silencioso ante fallos temporales
+            }
+        }
+
+        async function confirmToggleStream() {
+            const isLive = document.getElementById("shStreamBadge")?.classList.contains("on");
+            const msg = isLive ? "¿Detener la emisión en directo en OBS?" : "¿INICIAR la emisión en directo a Internet?";
+            if (confirm(msg)) {
+                await fetch('/api/v1/switcher/stream/toggle', { method: 'POST' });
+                setTimeout(fetchStreamHealth, 500);
+            }
+        }
+
+        async function confirmToggleRecord() {
+            const isRec = document.getElementById("shRecBadge")?.classList.contains("on");
+            const msg = isRec ? "¿Detener la grabación local en OBS?" : "¿Iniciar grabación de video en disco?";
+            if (confirm(msg)) {
+                await fetch('/api/v1/switcher/record/toggle', { method: 'POST' });
+                setTimeout(fetchStreamHealth, 500);
+            }
+        }
+
+        // Inicialización
+        connectWS();
+        fetchObsScenes();
+        loadTeamsLibrary();
+        loadSponsorsLibrary();
+        fetchStreamHealth();
+        setInterval(fetchStreamHealth, 2500);
+
+        // Preguntar perfil la primera vez si no se ha elegido
+        if (!localStorage.getItem('stream_sport_selected')) {
+            setTimeout(openSportModal, 500);
+            localStorage.setItem('stream_sport_selected', '1');
+        }
+    </script>
+</body>
+</html>

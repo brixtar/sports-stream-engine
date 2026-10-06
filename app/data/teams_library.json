@@ -1,0 +1,100 @@
+[
+  {
+    "id": "team_1",
+    "name": "EQUIPO LOCAL",
+    "logo_url": "/uploads/default_local.png",
+    "players": [
+      {
+        "id": "p1",
+        "number": 1,
+        "name": "Arquero Titular",
+        "is_starter": true,
+        "position": "ARQ"
+      },
+      {
+        "id": "p2",
+        "number": 2,
+        "name": "Defensor Central",
+        "is_starter": true,
+        "position": "DEF"
+      },
+      {
+        "id": "p3",
+        "number": 5,
+        "name": "Mediocampista",
+        "is_starter": true,
+        "position": "MED"
+      },
+      {
+        "id": "p4",
+        "number": 10,
+        "name": "Delantero Estrella",
+        "is_starter": true,
+        "position": "DEL"
+      },
+      {
+        "id": "p5",
+        "number": 18,
+        "name": "Suplente Ingreso",
+        "is_starter": false,
+        "position": "DEL"
+      },
+      {
+        "id": "p6",
+        "number": 22,
+        "name": "Suplente Arquero",
+        "is_starter": false,
+        "position": "ARQ"
+      }
+    ]
+  },
+  {
+    "id": "team_2",
+    "name": "EQUIPO VISITANTE",
+    "logo_url": "/uploads/default_visitante.png",
+    "players": [
+      {
+        "id": "p7",
+        "number": 1,
+        "name": "Arquero Rival",
+        "is_starter": true,
+        "position": "ARQ"
+      },
+      {
+        "id": "p8",
+        "number": 4,
+        "name": "Defensor Rival",
+        "is_starter": true,
+        "position": "DEF"
+      },
+      {
+        "id": "p9",
+        "number": 8,
+        "name": "Volante Rival",
+        "is_starter": true,
+        "position": "MED"
+      },
+      {
+        "id": "p10",
+        "number": 9,
+        "name": "Goleador Rival",
+        "is_starter": true,
+        "position": "DEL"
+      },
+      {
+        "id": "p11",
+        "number": 14,
+        "name": "Suplente Rival",
+        "is_starter": false,
+        "position": "MED"
+      },
+      {
+        "id": "p12",
+        "number": 19,
+        "name": "Delantero Banco",
+        "is_starter": false,
+        "position": "DEL"
+      }
+    ]
+  }
+]
